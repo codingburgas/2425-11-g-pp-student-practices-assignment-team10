@@ -1,9 +1,9 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms.fields.choices import SelectField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, Length
 
 from .models import User
-
 from flask_wtf import FlaskForm
 from wtforms.fields.simple import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email
@@ -16,6 +16,7 @@ class LoginForm(FlaskForm):
 class RegisterForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=4, max=64)])
     email = StringField('Email', validators=[DataRequired()])
+    role = SelectField('Role', choices=[('student', 'Student'), ('teacher', 'Teacher')], validators=[DataRequired()])
     password = PasswordField('Password', validators=[
         DataRequired(),
         Length(min=8, message="Password should be at least 8 characters long")

@@ -51,6 +51,16 @@
                     {% endif %}
                 </div>
 
+                <div class="mb-3">
+                    {{ form.role.label(class="form-label fw-semibold") }}
+                    {{ form.role(class="form-select rounded-3 shadow-sm") }}
+                    {% if form.role.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.role.errors[0] }}
+                        </div>
+                    {% endif %}
+                </div>
+
                 <div class="d-grid mb-3">
                     {{ form.submit(class="btn btn-primary rounded-3 fw-bold py-2") }}
                 </div>

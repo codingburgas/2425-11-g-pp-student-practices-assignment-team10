@@ -26,11 +26,10 @@ def login():
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.profile'))
 
     form = RegisterForm()
     if form.validate_on_submit():
-        # Check if username or email already exists
         if User.query.filter_by(username=form.username.data).first():
             flash('Username already taken')
             return redirect(url_for('auth.register'))
@@ -38,7 +37,7 @@ def register():
             flash('Email already registered')
             return redirect(url_for('auth.register'))
 
-        user = User(username=form.username.data, email=form.email.data)
+        user = User(username=form.username.data, email=form.email.data, role=form.role.data)
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
