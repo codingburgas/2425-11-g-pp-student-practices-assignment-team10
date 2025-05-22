@@ -10,8 +10,3 @@ def index():
 @login_required
 def profile():
     return render_template('profile.html', user=current_user)
-
-@main_bp.route('/form')
-@login_required
-def form():
-    return render_template('form_placeholder.html')  # Create this template

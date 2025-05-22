@@ -16,6 +16,7 @@ def create_app(config):
 
     from .auth import auth_bp
     from .main import main_bp
+    from .form import form_bp
     from .auth.models import User
     @login_manager.user_loader
     def load_user(user_id):
@@ -23,4 +24,5 @@ def create_app(config):
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
+    app.register_blueprint(form_bp)
     return app
