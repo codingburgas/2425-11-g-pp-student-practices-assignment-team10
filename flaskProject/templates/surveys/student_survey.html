@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Анкета за ученици{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card shadow-lg rounded-4 p-4 mx-auto" style="max-width: 700px;">
+        <h2 class="text-center text-primary fw-bold mb-4">Анкета за ученици</h2>
+        <p class="text-center text-muted mb-4">Моля, попълнете анкетата, за да можем по-добре да Ви препоръчаме училище.</p>
+
+        <form method="POST">
+            {{ form.hidden_tag() }}
+
+            {% for field in form %}
+                {% if field.type != 'CSRFToken' and field.name != 'submit' %}
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">{{ field.label }}</label>
+
+                        {% if field.type == 'RadioField' %}
+                            {% for subfield in field %}
+                                <div class="form-check">
+                                    {{ subfield(class="form-check-input", id=subfield.id) }}
+                                    <label class="form-check-label" for="{{ subfield.id }}">
+                                        {{ subfield.label.text }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            {{ field(class="form-control") }}
+                        {% endif %}
+
+                        {% if field.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ field.errors[0] }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <div class="d-grid">
+                {{ form.submit(class="btn btn-primary rounded-3 fw-bold py-2") }}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
