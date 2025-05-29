@@ -61,3 +61,79 @@ class StudentSurveyForm(FlaskForm):
     ], validators=[DataRequired()])
 
     submit = SubmitField('Изпрати')
+
+
+class TeacherSurveyForm(FlaskForm):
+    favorite_subjects_to_mentor = RadioField(
+        'Which subject do you enjoy mentoring in the most?',
+        choices=[
+            ('math', 'Mathematics'),
+            ('bulgarian', 'Bulgarian Language and Literature'),
+            ('language', 'Foreign Languages'),
+            ('it', 'Informatics / IT'),
+            ('history', 'History / Geography'),
+            ('science', 'Biology / Chemistry'),
+            ('arts', 'Arts')
+        ],
+        validators=[DataRequired()]
+    )
+
+    teaching_style = RadioField(
+        'What is your preferred teaching/mentoring style?',
+        choices=[
+            ('hands_on', 'Practical activities and demonstrations'),
+            ('listening', 'Lectures and explanations'),
+            ('reading', 'Assigning readings and discussion'),
+            ('discussion', 'Collaborative discussions and teamwork')
+        ],
+        validators=[DataRequired()]
+    )
+
+    strengths = RadioField(
+        'What is your strongest mentoring trait?',
+        choices=[
+            ('logic', 'Logical thinking and analysis'),
+            ('communication', 'Communication and explanation'),
+            ('creativity', 'Creativity and innovation'),
+            ('organization', 'Structure and discipline'),
+            ('tech', 'Using technology effectively')
+        ],
+        validators=[DataRequired()]
+    )
+
+    student_type_preference = RadioField(
+        'What type of students do you work best with?',
+        choices=[
+            ('active', 'Highly active and engaged'),
+            ('thinker', 'Reflective and thoughtful'),
+            ('helper', 'Supportive and cooperative'),
+            ('independent', 'Independent learners')
+        ],
+        validators=[DataRequired()]
+    )
+
+    extracurricular_focus = RadioField(
+        'What kind of extracurricular mentoring do you enjoy most?',
+        choices=[
+            ('competitions', 'STEM competitions'),
+            ('journalism', 'Writing, theatre, or journalism'),
+            ('artistic', 'Music, art, or dance'),
+            ('volunteering', 'Student council or volunteering'),
+            ('sports', 'Sports and physical training')
+        ],
+        validators=[DataRequired()]
+    )
+
+    mentorship_goal = RadioField(
+        'What is your primary goal as a mentor?',
+        choices=[
+            ('abroad', 'Help students apply abroad'),
+            ('career', 'Guide toward specific careers'),
+            ('entrepreneur', 'Support young entrepreneurs'),
+            ('discover', 'Help them find their passion'),
+            ('helping', 'Be a role model and helper')
+        ],
+        validators=[DataRequired()]
+    )
+
+    submit = SubmitField('Submit')
