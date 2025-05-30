@@ -18,6 +18,7 @@ def create_app(config):
     from .main import main_bp
     from .form import form_bp
     from .auth.models import User
+    from .form.models import StudentSurveyResponse
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
