@@ -33,7 +33,7 @@ def student_survey():
         db.session.add(response)
         db.session.commit()
         flash("Survey submitted successfully!", "success")
-        return render_template('thank_you.html')
+        return redirect(url_for('form.find_mentor'))
     return render_template('surveys/student_survey.html', form=form)
 
 
@@ -69,3 +69,11 @@ def teacher_survey():
         return render_template('thank_you.html')
 
     return render_template('surveys/teacher_survey.html', form=form)
+
+@form_bp.route('/survey/find-mentor')
+@login_required
+def find_mentor():
+    if current_user.role != 'student':
+        flash("Only students can access this page.", "warning")
+        return redirect(url_for('main.dashboard'))
+    return render_template('surveys/find_mentor.html')

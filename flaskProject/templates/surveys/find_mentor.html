@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Find Your Mentor{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-center min-vh-100 bg-light">
+    <div class="card shadow-lg p-4 rounded-4 text-center" style="width: 100%; max-width: 480px;">
+        <div class="card-body">
+            <i class="bi bi-search text-primary" style="font-size: 3rem;"></i>
+            <h2 class="fw-bold text-primary mt-3">We’re Finding Your Mentor</h2>
+            <p class="text-muted mt-2">
+                Thank you for completing the survey. Based on your answers, we’ll recommend the most suitable teacher to mentor you.
+            </p>
+            <a href="{{ url_for('main.profile') }}" class="btn btn-outline-primary mt-4 rounded-3 px-4">
+                <i class="bi bi-person-circle me-2"></i>Back to Profile
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
