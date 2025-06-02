@@ -1,5 +1,5 @@
 <p align = "center">
-  <img src="design/Logo.png" width="1040" text-align="center">
+  <img src="flaskProject/static/Logo.png" width="1040" text-align="center" alt="">
 </p>
 
 <hr>
