@@ -1,7 +1,6 @@
 <p align = "center">
   <img src="flaskProject/static/Logo.png" width="1040" text-align="center" alt="">
 </p>
-
 <hr>
 
 # 📖 About the application 
