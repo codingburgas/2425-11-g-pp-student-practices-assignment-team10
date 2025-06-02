@@ -17,6 +17,7 @@ def create_app(config):
     from .auth import auth_bp
     from .main import main_bp
     from .form import form_bp
+    from .ml import ml_bp
     from .auth.models import User
     from .form.models import StudentSurveyResponse
     @login_manager.user_loader
@@ -26,4 +27,5 @@ def create_app(config):
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
     app.register_blueprint(form_bp)
+    app.register_blueprint(ml_bp)
     return app
