@@ -10,4 +10,6 @@ app = create_app(Config)
 bootstrap = Bootstrap(app)
 
 if __name__ == '__main__':
+    with app.app_context():
+        app.db.create_all()
     app.run()
