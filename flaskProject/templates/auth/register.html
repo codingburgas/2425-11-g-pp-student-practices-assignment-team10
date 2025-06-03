@@ -2,73 +2,288 @@
 
 {% block title %}Register{% endblock %}
 
+{% block styles %}
+<style>
+    .register-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+    }
+
+    .register-form {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 460px;
+        animation: formFadeIn 0.8s ease-out;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .register-form::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+        animation: formShimmer 4s ease-in-out infinite;
+    }
+
+    @keyframes formFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    @keyframes formShimmer {
+        0% { left: -100%; }
+        50% { left: 100%; }
+        100% { left: 100%; }
+    }
+
+    .register-form h2 {
+        color: white;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        font-size: 2rem;
+        background: linear-gradient(45deg, #fff, #f8f9fa, #fff);
+        background-size: 200% 200%;
+        animation: textShine 3s ease-in-out infinite;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    @keyframes textShine {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    .register-form p {
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 2rem;
+        font-size: 1rem;
+    }
+
+    .form-label {
+        color: rgba(255, 255, 255, 0.9) !important;
+        font-weight: 600 !important;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control, .form-select {
+        background: rgba(255, 255, 255, 0.1) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 12px !important;
+        color: white !important;
+        padding: 0.75rem 1rem !important;
+        font-size: 1rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.6) !important;
+    }
+
+    .form-control:focus, .form-select:focus {
+        background: rgba(255, 255, 255, 0.15) !important;
+        border-color: rgba(255, 255, 255, 0.4) !important;
+        box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.1), 0 8px 25px rgba(0, 0, 0, 0.2) !important;
+        transform: translateY(-2px);
+    }
+
+    .form-select option {
+        background: #1a1a2e;
+        color: white;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea, #764ba2) !important;
+        border: none !important;
+        border-radius: 12px !important;
+        padding: 0.875rem 2rem !important;
+        font-weight: 600 !important;
+        font-size: 1.1rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3) !important;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-primary::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .btn-primary:hover::before {
+        left: 100%;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px) !important;
+        box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4) !important;
+        background: linear-gradient(135deg, #7c8ef5, #8557b8) !important;
+    }
+
+    .btn-primary:active {
+        transform: translateY(-1px) !important;
+    }
+
+    .invalid-feedback {
+        color: #ff6b6b !important;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        text-shadow: 0 0 10px rgba(255, 107, 107, 0.3);
+    }
+
+    .login-link {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+        text-align: center;
+        animation: linkFadeIn 1s ease-out 0.3s both;
+    }
+
+    @keyframes linkFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .login-link p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .login-link a {
+        color: #4facfe !important;
+        text-decoration: none !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease;
+        text-shadow: 0 0 10px rgba(79, 172, 254, 0.3);
+    }
+
+    .login-link a:hover {
+        color: #67c3ff !important;
+        text-shadow: 0 0 15px rgba(79, 172, 254, 0.5);
+        transform: translateX(2px);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .register-container {
+            padding: 1rem;
+            min-height: 70vh;
+        }
+
+        .register-form {
+            padding: 2rem 1.5rem;
+            border-radius: 16px;
+        }
+
+        .register-form h2 {
+            font-size: 1.75rem;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="d-flex align-items-center justify-content-center min-vh-100 bg-light">
-    <div class="card shadow-lg p-4 rounded-4" style="width: 100%; max-width: 460px;">
-        <div class="card-body">
-            <h2 class="text-center mb-4 text-primary fw-bold">Create Account</h2>
-            <p class="text-center text-muted mb-4">Join us by filling in the information below</p>
-            <form method="POST" action="{{ url_for('auth.register') }}">
-                {{ form.hidden_tag() }}
+<div class="register-container">
+    <div class="register-form">
+        <h2 class="text-center">Create Account</h2>
+        <p class="text-center">Join us by filling in the information below</p>
 
-                <div class="mb-3">
-                    {{ form.username.label(class="form-label fw-semibold") }}
-                    {{ form.username(class="form-control rounded-3 shadow-sm", placeholder="Choose a username") }}
-                    {% if form.username.errors %}
-                        <div class="invalid-feedback d-block">
-                            {{ form.username.errors[0] }}
-                        </div>
-                    {% endif %}
-                </div>
+        <form method="POST" action="{{ url_for('auth.register') }}">
+            {{ form.hidden_tag() }}
 
-                <div class="mb-3">
-                    {{ form.email.label(class="form-label fw-semibold") }}
-                    {{ form.email(class="form-control rounded-3 shadow-sm", placeholder="Your email address") }}
-                    {% if form.email.errors %}
-                        <div class="invalid-feedback d-block">
-                            {{ form.email.errors[0] }}
-                        </div>
-                    {% endif %}
-                </div>
+            <div class="mb-3">
+                {{ form.username.label(class="form-label") }}
+                {{ form.username(class="form-control", placeholder="Choose a username") }}
+                {% if form.username.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.username.errors[0] }}
+                    </div>
+                {% endif %}
+            </div>
 
-                <div class="mb-3">
-                    {{ form.password.label(class="form-label fw-semibold") }}
-                    {{ form.password(class="form-control rounded-3 shadow-sm", placeholder="Create a password") }}
-                    {% if form.password.errors %}
-                        <div class="invalid-feedback d-block">
-                            {{ form.password.errors[0] }}
-                        </div>
-                    {% endif %}
-                </div>
+            <div class="mb-3">
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(class="form-control", placeholder="Your email address") }}
+                {% if form.email.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.email.errors[0] }}
+                    </div>
+                {% endif %}
+            </div>
 
-                <div class="mb-3">
-                    {{ form.confirm_password.label(class="form-label fw-semibold") }}
-                    {{ form.confirm_password(class="form-control rounded-3 shadow-sm", placeholder="Repeat your password") }}
-                    {% if form.confirm_password.errors %}
-                        <div class="invalid-feedback d-block">
-                            {{ form.confirm_password.errors[0] }}
-                        </div>
-                    {% endif %}
-                </div>
+            <div class="mb-3">
+                {{ form.password.label(class="form-label") }}
+                {{ form.password(class="form-control", placeholder="Create a password") }}
+                {% if form.password.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.password.errors[0] }}
+                    </div>
+                {% endif %}
+            </div>
 
-                <div class="mb-3">
-                    {{ form.role.label(class="form-label fw-semibold") }}
-                    {{ form.role(class="form-select rounded-3 shadow-sm") }}
-                    {% if form.role.errors %}
-                        <div class="invalid-feedback d-block">
-                            {{ form.role.errors[0] }}
-                        </div>
-                    {% endif %}
-                </div>
+            <div class="mb-3">
+                {{ form.confirm_password.label(class="form-label") }}
+                {{ form.confirm_password(class="form-control", placeholder="Repeat your password") }}
+                {% if form.confirm_password.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.confirm_password.errors[0] }}
+                    </div>
+                {% endif %}
+            </div>
 
-                <div class="d-grid mb-3">
-                    {{ form.submit(class="btn btn-primary rounded-3 fw-bold py-2") }}
-                </div>
-            </form>
-        </div>
-        <div class="card-footer text-center bg-white border-0 mt-3">
-            <p class="mb-0">Already have an account?
-                <a href="{{ url_for('auth.login') }}" class="text-decoration-none text-primary fw-semibold">Login here</a>
+            <div class="mb-3">
+                {{ form.role.label(class="form-label") }}
+                {{ form.role(class="form-select") }}
+                {% if form.role.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.role.errors[0] }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="d-grid mb-3">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </form>
+
+        <div class="login-link">
+            <p>Already have an account?
+                <a href="{{ url_for('auth.login') }}">Login here</a>
             </p>
         </div>
     </div>
