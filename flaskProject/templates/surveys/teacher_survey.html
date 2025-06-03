@@ -4,81 +4,83 @@
 
 {% block content %}
 <div class="container py-5">
-<div class="row justify-content-center">
-<div class="col-md-8">
-<div class="card shadow-lg rounded-4">
-<div class="card-body p-4">
-<h2 class="text-center text-primary mb-4">Teacher Mentor Survey</h2>
-<form method="POST">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg rounded-4">
+                <div class="card-body p-4">
+                    <h2 class="text-center text-primary mb-4">Teacher Mentor Survey</h2>
+
+                    <form method="POST">
                         {{ form.hidden_tag() }}
 
                         <div class="mb-3">
                             {{ form.favorite_subjects_to_mentor.label(class="form-label fw-semibold") }}
                             {% for subfield in form.favorite_subjects_to_mentor %}
-<div class="form-check">
+                                <div class="form-check">
                                     {{ subfield(class="form-check-input") }}
                                     {{ subfield.label(class="form-check-label") }}
-</div>
+                                </div>
                             {% endfor %}
-</div>
+                        </div>
 
                         <div class="mb-3">
                             {{ form.teaching_style.label(class="form-label fw-semibold") }}
                             {% for subfield in form.teaching_style %}
-<div class="form-check">
+                                <div class="form-check">
                                     {{ subfield(class="form-check-input") }}
                                     {{ subfield.label(class="form-check-label") }}
-</div>
+                                </div>
                             {% endfor %}
-</div>
+                        </div>
 
                         <div class="mb-3">
                             {{ form.strengths.label(class="form-label fw-semibold") }}
                             {% for subfield in form.strengths %}
-<div class="form-check">
+                                <div class="form-check">
                                     {{ subfield(class="form-check-input") }}
                                     {{ subfield.label(class="form-check-label") }}
-</div>
+                                </div>
                             {% endfor %}
-</div>
+                        </div>
 
                         <div class="mb-3">
                             {{ form.student_type_preference.label(class="form-label fw-semibold") }}
                             {% for subfield in form.student_type_preference %}
-<div class="form-check">
+                                <div class="form-check">
                                     {{ subfield(class="form-check-input") }}
                                     {{ subfield.label(class="form-check-label") }}
-</div>
+                                </div>
                             {% endfor %}
-</div>
+                        </div>
 
                         <div class="mb-3">
                             {{ form.extracurricular_focus.label(class="form-label fw-semibold") }}
                             {% for subfield in form.extracurricular_focus %}
-<div class="form-check">
+                                <div class="form-check">
                                     {{ subfield(class="form-check-input") }}
                                     {{ subfield.label(class="form-check-label") }}
-</div>
+                                </div>
                             {% endfor %}
-</div>
+                        </div>
 
                         <div class="mb-3">
                             {{ form.mentorship_goal.label(class="form-label fw-semibold") }}
                             {% for subfield in form.mentorship_goal %}
-<div class="form-check">
+                                <div class="form-check">
                                     {{ subfield(class="form-check-input") }}
                                     {{ subfield.label(class="form-check-label") }}
-</div>
+                                </div>
                             {% endfor %}
-</div>
+                        </div>
 
                         <div class="d-grid mt-4">
                             {{ form.submit(class="btn btn-primary btn-lg rounded-3") }}
-</div>
-</form>
-</div>
-</div>
-</div>
-</div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

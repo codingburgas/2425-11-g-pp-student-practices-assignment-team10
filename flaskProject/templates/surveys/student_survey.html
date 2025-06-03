@@ -1,12 +1,14 @@
 {% extends "base.html" %}
 
-{% block title %}Анкета за ученици{% endblock %}
+{% block title %}Student Survey{% endblock %}
 
 {% block content %}
 <div class="container py-5">
     <div class="card shadow-lg rounded-4 p-4 mx-auto" style="max-width: 700px;">
-        <h2 class="text-center text-primary fw-bold mb-4">Анкета за ученици</h2>
-        <p class="text-center text-muted mb-4">Моля, попълнете анкетата, за да можем по-добре да Ви препоръчаме училище.</p>
+        <h2 class="text-center text-primary fw-bold mb-4">Student Survey</h2>
+        <p class="text-center text-muted mb-4">
+            Please fill out the survey so we can better recommend a school for you.
+        </p>
 
         <form method="POST">
             {{ form.hidden_tag() }}
