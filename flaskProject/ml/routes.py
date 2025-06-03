@@ -3,9 +3,8 @@ from flask_login import login_required, current_user
 from .model import LogisticRegression
 from .utils import encode_features
 from ..form.models import StudentSurveyResponse, TeacherSurveyResponse
+from . import ml_bp
 from flaskProject import db
-
-ml_bp = Blueprint('ml', __name__, template_folder='templates')
 
 @ml_bp.route('/match')
 @login_required
@@ -17,7 +16,7 @@ def match():
     teachers = TeacherSurveyResponse.query.all()
 
     if not student_data or not teachers:
-        return render_template('ml/no_data.html')
+        return render_template('no_data.html')
 
     matches = []
     for teacher in teachers:
@@ -29,4 +28,4 @@ def match():
 
     matches.sort(key=lambda x: x[1], reverse=True)
 
-    return render_template('ml/matches.html', matches=matches)
+    return render_template('matches.html', matches=matches)
