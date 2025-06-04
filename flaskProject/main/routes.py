@@ -1,6 +1,7 @@
 from flask import render_template
 from flask_login import login_required, current_user
 from . import main_bp
+from flaskProject.form.models import StudentSurveyResponse
 
 @main_bp.route('/')
 def index():
@@ -9,4 +10,8 @@ def index():
 @main_bp.route('/profile')
 @login_required
 def profile():
-    return render_template('profile.html', user=current_user)
+    has_survey = False
+    if current_user.role == 'student':
+        has_survey = StudentSurveyResponse.query.filter_by(student_id=current_user.id).first() is not None
+
+    return render_template('profile.html', user=current_user, has_survey=has_survey)
