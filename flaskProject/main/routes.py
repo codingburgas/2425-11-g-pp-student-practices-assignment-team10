@@ -4,6 +4,8 @@ from flask_login import login_required, current_user
 from flaskProject.auth.models import User
 from .. import db
 from . import main_bp
+from flask import request
+from flaskProject.auth.forms import EditProfileForm
 
 
 @main_bp.route('/')
@@ -50,3 +52,30 @@ def delete_user(user_id):
     db.session.commit()
     flash("User deleted.")
     return redirect(url_for('main.admin_users'))
+
+
+@main_bp.route('/edit-profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    form = EditProfileForm(obj=current_user)  # pre-fill with current user data
+
+    if form.validate_on_submit():
+        # Check if the username or email is being changed to something that already exists
+        if form.username.data != current_user.username and User.query.filter_by(username=form.username.data).first():
+            flash('Username already taken.')
+            return redirect(url_for('main.edit_profile'))
+
+        if form.email.data != current_user.email and User.query.filter_by(email=form.email.data).first():
+            flash('Email already in use.')
+            return redirect(url_for('main.edit_profile'))
+
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        if form.password.data:
+            current_user.set_password(form.password.data)
+
+        db.session.commit()
+        flash('Profile updated successfully!')
+        return redirect(url_for('main.profile'))
+
+    return render_template('edit_profile.html', form=form)

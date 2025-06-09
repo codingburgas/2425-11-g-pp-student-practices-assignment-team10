@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+ 
+{% block title %}Edit Profile{% endblock %}
+ 
+{% block content %}
+<div class="container py-5">
+<div class="card mx-auto shadow p-4 rounded-4" style="max-width: 600px;">
+<h3 class="mb-4 text-center">Edit Your Profile</h3>
+<form method="POST">
+            {{ form.hidden_tag() }}
+ 
+            <div class="mb-3">
+                {{ form.username.label(class="form-label") }}
+                {{ form.username(class="form-control") }}
+</div>
+ 
+            <div class="mb-3">
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(class="form-control") }}
+</div>
+ 
+            <div class="mb-3">
+                {{ form.password.label(class="form-label") }}
+                {{ form.password(class="form-control") }}
+<div class="form-text">Leave blank to keep current password</div>
+</div>
+ 
+            <div class="text-center">
+                {{ form.submit(class="btn btn-primary px-4") }}
+</div>
+</form>
+</div>
+</div>
+{% endblock %}

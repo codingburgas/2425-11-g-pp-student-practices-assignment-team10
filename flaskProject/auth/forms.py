@@ -8,10 +8,12 @@ from flask_wtf import FlaskForm
 from wtforms.fields.simple import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email
 
+
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
+
 
 class RegisterForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=4, max=64)])
@@ -26,3 +28,10 @@ class RegisterForm(FlaskForm):
         EqualTo('password', message="Passwords must match")
     ])
     submit = SubmitField('Register')
+
+
+class EditProfileForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(), Length(min=4, max=64)])
+    email = StringField('Email', validators=[DataRequired()])
+    password = PasswordField('New Password (leave blank to keep current)')
+    submit = SubmitField('Save Changes')
