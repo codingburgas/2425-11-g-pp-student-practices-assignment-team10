@@ -1,49 +1,360 @@
 {% extends "base.html" %}
-
 {% block title %}Student Survey{% endblock %}
-
 {% block content %}
-<div class="container py-5">
-    <div class="card shadow-lg rounded-4 p-4 mx-auto" style="max-width: 700px;">
-        <h2 class="text-center text-primary fw-bold mb-4">Student Survey</h2>
-        <p class="text-center text-muted mb-4">
-            Please fill out the survey so we can better recommend a school for you.
-        </p>
-
-        <form method="POST">
-            {{ form.hidden_tag() }}
-
-            {% for field in form %}
-                {% if field.type != 'CSRFToken' and field.name != 'submit' %}
-                    <div class="mb-4">
-                        <label class="form-label fw-semibold">{{ field.label }}</label>
-
-                        {% if field.type == 'RadioField' %}
-                            {% for subfield in field %}
-                                <div class="form-check">
-                                    {{ subfield(class="form-check-input", id=subfield.id) }}
-                                    <label class="form-check-label" for="{{ subfield.id }}">
-                                        {{ subfield.label.text }}
-                                    </label>
-                                </div>
-                            {% endfor %}
-                        {% else %}
-                            {{ field(class="form-control") }}
-                        {% endif %}
-
-                        {% if field.errors %}
-                            <div class="invalid-feedback d-block">
-                                {{ field.errors[0] }}
+<div class="min-vh-100" >
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-xl-7">
+                <div class="card border-0 shadow-lg" style="border-radius: 24px; backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.95);">
+                    <div class="card-body p-5">
+                        <!-- Header Section -->
+                        <div class="text-center mb-5">
+                            <div class="d-inline-flex align-items-center justify-content-center mb-3"
+                                 style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 20px;">
+                                <i class="fas fa-graduation-cap text-white" style="font-size: 2rem;"></i>
                             </div>
-                        {% endif %}
-                    </div>
-                {% endif %}
-            {% endfor %}
+                            <h1 class="fw-bold mb-3" style="color: #2d3748; font-size: 2.5rem;">Student Discovery Survey</h1>
+                            <p class="text-muted fs-5 mb-0">Help us find the perfect educational path for your future</p>
+                            <div class="progress mt-3" style="height: 4px; border-radius: 2px;">
+                                <div class="progress-bar bg-gradient" style="width: 0%; background: linear-gradient(90deg, #667eea, #764ba2); transition: width 0.3s ease;" id="surveyProgress"></div>
+                            </div>
+                        </div>
 
-            <div class="d-grid">
-                {{ form.submit(class="btn btn-primary rounded-3 fw-bold py-2") }}
+                        <form method="POST" id="surveyForm">
+                            {{ form.hidden_tag() }}
+
+                            <!-- Question 1 -->
+                            <div class="question-container mb-5" data-question="1">
+                                <div class="question-header mb-4">
+                                    <span class="badge bg-primary bg-gradient px-3 py-2 rounded-pill fs-6 mb-2">Question 1 of 7</span>
+                                    <h3 class="fw-semibold mb-0" style="color: #2d3748;">{{ form.favorite_subject.label.text }}</h3>
+                                </div>
+                                <div class="row g-3">
+                                    {% for subfield in form.favorite_subject %}
+                                    <div class="col-md-6">
+                                        <div class="option-card">
+                                            {{ subfield(class="form-check-input d-none", id=subfield.id) }}
+                                            <label class="option-label" for="{{ subfield.id }}">
+                                                <div class="option-icon">
+                                                    {% if subfield.data == 'math' %}📊
+                                                    {% elif subfield.data == 'bulgarian' %}📖
+                                                    {% elif subfield.data == 'language' %}🌍
+                                                    {% elif subfield.data == 'it' %}💻
+                                                    {% elif subfield.data == 'history' %}🏛️
+                                                    {% elif subfield.data == 'science' %}🔬
+                                                    {% elif subfield.data == 'arts' %}🎨
+                                                    {% endif %}
+                                                </div>
+                                                <span class="option-text">{{ subfield.label.text }}</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Question 2 -->
+                            <div class="question-container mb-5" data-question="2" style="display: none;">
+                                <div class="question-header mb-4">
+                                    <span class="badge bg-primary bg-gradient px-3 py-2 rounded-pill fs-6 mb-2">Question 2 of 7</span>
+                                    <h3 class="fw-semibold mb-0" style="color: #2d3748;">{{ form.learning_style.label.text }}</h3>
+                                </div>
+                                <div class="row g-3">
+                                    {% for subfield in form.learning_style %}
+                                    <div class="col-md-6">
+                                        <div class="option-card">
+                                            {{ subfield(class="form-check-input d-none", id=subfield.id) }}
+                                            <label class="option-label" for="{{ subfield.id }}">
+                                                <div class="option-icon">
+                                                    {% if subfield.data == 'hands_on' %}🔧
+                                                    {% elif subfield.data == 'listening' %}👂
+                                                    {% elif subfield.data == 'reading' %}📚
+                                                    {% elif subfield.data == 'discussion' %}💬
+                                                    {% endif %}
+                                                </div>
+                                                <span class="option-text">{{ subfield.label.text }}</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Question 3 -->
+                            <div class="question-container mb-5" data-question="3" style="display: none;">
+                                <div class="question-header mb-4">
+                                    <span class="badge bg-primary bg-gradient px-3 py-2 rounded-pill fs-6 mb-2">Question 3 of 7</span>
+                                    <h3 class="fw-semibold mb-0" style="color: #2d3748;">{{ form.strength.label.text }}</h3>
+                                </div>
+                                <div class="row g-3">
+                                    {% for subfield in form.strength %}
+                                    <div class="col-md-6">
+                                        <div class="option-card">
+                                            {{ subfield(class="form-check-input d-none", id=subfield.id) }}
+                                            <label class="option-label" for="{{ subfield.id }}">
+                                                <div class="option-icon">
+                                                    {% if subfield.data == 'logic' %}🧠
+                                                    {% elif subfield.data == 'communication' %}🗣️
+                                                    {% elif subfield.data == 'creativity' %}💡
+                                                    {% elif subfield.data == 'organization' %}📋
+                                                    {% elif subfield.data == 'tech' %}⚙️
+                                                    {% endif %}
+                                                </div>
+                                                <span class="option-text">{{ subfield.label.text }}</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Question 4 -->
+                            <div class="question-container mb-5" data-question="4" style="display: none;">
+                                <div class="question-header mb-4">
+                                    <span class="badge bg-primary bg-gradient px-3 py-2 rounded-pill fs-6 mb-2">Question 4 of 7</span>
+                                    <h3 class="fw-semibold mb-0" style="color: #2d3748;">{{ form.future_study.label.text }}</h3>
+                                </div>
+                                <div class="row g-3">
+                                    {% for subfield in form.future_study %}
+                                    <div class="col-md-6">
+                                        <div class="option-card">
+                                            {{ subfield(class="form-check-input d-none", id=subfield.id) }}
+                                            <label class="option-label" for="{{ subfield.id }}">
+                                                <div class="option-icon">
+                                                    {% if subfield.data == 'programming' %}👨‍💻
+                                                    {% elif subfield.data == 'humanities' %}📜
+                                                    {% elif subfield.data == 'sciences' %}🧪
+                                                    {% elif subfield.data == 'arts' %}🎭
+                                                    {% elif subfield.data == 'business' %}💼
+                                                    {% elif subfield.data == 'undecided' %}❓
+                                                    {% endif %}
+                                                </div>
+                                                <span class="option-text">{{ subfield.label.text }}</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Question 5 -->
+                            <div class="question-container mb-5" data-question="5" style="display: none;">
+                                <div class="question-header mb-4">
+                                    <span class="badge bg-primary bg-gradient px-3 py-2 rounded-pill fs-6 mb-2">Question 5 of 7</span>
+                                    <h3 class="fw-semibold mb-0" style="color: #2d3748;">{{ form.class_behavior.label.text }}</h3>
+                                </div>
+                                <div class="row g-3">
+                                    {% for subfield in form.class_behavior %}
+                                    <div class="col-md-6">
+                                        <div class="option-card">
+                                            {{ subfield(class="form-check-input d-none", id=subfield.id) }}
+                                            <label class="option-label" for="{{ subfield.id }}">
+                                                <div class="option-icon">
+                                                    {% if subfield.data == 'active' %}🙋‍♂️
+                                                    {% elif subfield.data == 'thinker' %}🤔
+                                                    {% elif subfield.data == 'helper' %}🤝
+                                                    {% elif subfield.data == 'independent' %}🎯
+                                                    {% endif %}
+                                                </div>
+                                                <span class="option-text">{{ subfield.label.text }}</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Question 6 -->
+                            <div class="question-container mb-5" data-question="6" style="display: none;">
+                                <div class="question-header mb-4">
+                                    <span class="badge bg-primary bg-gradient px-3 py-2 rounded-pill fs-6 mb-2">Question 6 of 7</span>
+                                    <h3 class="fw-semibold mb-0" style="color: #2d3748;">{{ form.activities.label.text }}</h3>
+                                </div>
+                                <div class="row g-3">
+                                    {% for subfield in form.activities %}
+                                    <div class="col-md-6">
+                                        <div class="option-card">
+                                            {{ subfield(class="form-check-input d-none", id=subfield.id) }}
+                                            <label class="option-label" for="{{ subfield.id }}">
+                                                <div class="option-icon">
+                                                    {% if subfield.data == 'competitions' %}🏆
+                                                    {% elif subfield.data == 'journalism' %}✍️
+                                                    {% elif subfield.data == 'artistic' %}🎵
+                                                    {% elif subfield.data == 'volunteering' %}🤲
+                                                    {% elif subfield.data == 'sports' %}⚽
+                                                    {% endif %}
+                                                </div>
+                                                <span class="option-text">{{ subfield.label.text }}</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Question 7 -->
+                            <div class="question-container mb-5" data-question="7" style="display: none;">
+                                <div class="question-header mb-4">
+                                    <span class="badge bg-primary bg-gradient px-3 py-2 rounded-pill fs-6 mb-2">Question 7 of 7</span>
+                                    <h3 class="fw-semibold mb-0" style="color: #2d3748;">{{ form.goal.label.text }}</h3>
+                                </div>
+                                <div class="row g-3">
+                                    {% for subfield in form.goal %}
+                                    <div class="col-md-6">
+                                        <div class="option-card">
+                                            {{ subfield(class="form-check-input d-none", id=subfield.id) }}
+                                            <label class="option-label" for="{{ subfield.id }}">
+                                                <div class="option-icon">
+                                                    {% if subfield.data == 'abroad' %}✈️
+                                                    {% elif subfield.data == 'career' %}🚀
+                                                    {% elif subfield.data == 'entrepreneur' %}💰
+                                                    {% elif subfield.data == 'discover' %}🔍
+                                                    {% elif subfield.data == 'helping' %}❤️
+                                                    {% endif %}
+                                                </div>
+                                                <span class="option-text">{{ subfield.label.text }}</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Navigation Buttons -->
+                            <div class="d-flex justify-content-between mt-5">
+                                <button type="button" class="btn btn-outline-secondary px-4 py-2 rounded-pill" id="prevBtn" style="display: none;">
+                                    <i class="fas fa-arrow-left me-2"></i>Previous
+                                </button>
+                                <div class="ms-auto">
+                                    <button type="button" class="btn btn-primary px-4 py-2 rounded-pill bg-gradient" id="nextBtn">
+                                        Next<i class="fas fa-arrow-right ms-2"></i>
+                                    </button>
+                                    {{ form.submit(class="btn btn-success px-4 py-2 rounded-pill bg-gradient", style="display: none;", id="submitBtn") }}
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-        </form>
+        </div>
     </div>
 </div>
+
+<style>
+.option-card {
+    transition: all 0.3s ease;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.option-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 1rem;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    height: 100%;
+    min-height: 120px;
+}
+
+.option-label:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+}
+
+.form-check-input:checked + .option-label {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-color: #667eea;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.option-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.option-text {
+    font-weight: 500;
+    font-size: 0.95rem;
+    line-height: 1.3;
+}
+
+.question-container {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.btn {
+    font-weight: 500;
+}
+
+.question-header h3 {
+    line-height: 1.3;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let currentQuestion = 1;
+    const totalQuestions = 7;
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    const progressBar = document.getElementById('surveyProgress');
+
+    function updateProgress() {
+        const progress = (currentQuestion / totalQuestions) * 100;
+        progressBar.style.width = progress + '%';
+    }
+
+    function showQuestion(questionNum) {
+        document.querySelectorAll('.question-container').forEach(container => {
+            container.style.display = 'none';
+        });
+        document.querySelector(`[data-question="${questionNum}"]`).style.display = 'block';
+
+        prevBtn.style.display = questionNum > 1 ? 'block' : 'none';
+        nextBtn.style.display = questionNum < totalQuestions ? 'block' : 'none';
+        submitBtn.style.display = questionNum === totalQuestions ? 'block' : 'none';
+
+        updateProgress();
+    }
+
+    nextBtn.addEventListener('click', function() {
+        if (currentQuestion < totalQuestions) {
+            currentQuestion++;
+            showQuestion(currentQuestion);
+        }
+    });
+
+    prevBtn.addEventListener('click', function() {
+        if (currentQuestion > 1) {
+            currentQuestion--;
+            showQuestion(currentQuestion);
+        }
+    });
+
+    // Initialize
+    showQuestion(1);
+    updateProgress();
+});
+</script>
 {% endblock %}
