@@ -254,6 +254,7 @@
             animation: alertSlideIn 0.5s ease-out;
             position: relative;
             overflow: hidden;
+            color: white !important; /* Force all alert text to be white */
         }
 
         /* Project description section */
@@ -385,23 +386,22 @@
 
         .alert-success {
             background: rgba(40, 167, 69, 0.9);
-            color: white;
+            color: white !important;
         }
 
         .alert-danger {
             background: rgba(220, 53, 69, 0.9);
-            color: white;
+            color: white !important;
         }
 
         .alert-warning {
             background: rgba(255, 193, 7, 0.9);
-            color: #212529;
+            color: white !important; /* Changed from #212529 to white */
         }
 
         .alert-info {
             background: rgba(13, 202, 240, 0.9);
-            color: white;
-        }
+            color: white !important;
 
         .btn-close {
             filter: brightness(0) invert(1);

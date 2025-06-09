@@ -1,25 +1,177 @@
 {% extends "base.html" %}
-
 {% block title %}Find Your Mentor{% endblock %}
 
+{% block styles %}
+<style>
+    /* Glassmorphism mentor card */
+    .mentor-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        padding: 3rem 2.5rem;
+        text-align: center;
+        color: white;
+        animation: mentorCardFadeIn 1s ease-out;
+        position: relative;
+        overflow: hidden;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .mentor-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+        animation: mentorShimmer 4s ease-in-out infinite;
+    }
+
+    @keyframes mentorCardFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(40px) scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    @keyframes mentorShimmer {
+        0% { left: -100%; }
+        50% { left: 100%; }
+        100% { left: 100%; }
+    }
+
+    .mentor-icon {
+        font-size: 4rem;
+        background: linear-gradient(45deg, #4facfe, #00f2fe);
+        background-size: 200% 200%;
+        animation: iconGlow 3s ease-in-out infinite;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1.5rem;
+        filter: drop-shadow(0 4px 8px rgba(79, 172, 254, 0.3));
+    }
+
+    @keyframes iconGlow {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    .mentor-title {
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        font-size: 2.2rem;
+        background: linear-gradient(45deg, #4facfe, #00f2fe, #4facfe);
+        background-size: 200% 200%;
+        animation: titleShine 3s ease-in-out infinite;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    @keyframes titleShine {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    .mentor-description {
+        font-size: 1.1rem;
+        line-height: 1.7;
+        margin-bottom: 2.5rem;
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .mentor-btn {
+        padding: 0.75rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        margin: 0 0.5rem 1rem;
+        transition: all 0.3s ease;
+        border: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .mentor-btn-primary {
+        background: linear-gradient(45deg, #4facfe, #00f2fe);
+        color: white;
+        box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+    }
+
+    .mentor-btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(79, 172, 254, 0.6);
+        color: white;
+    }
+
+    .mentor-btn-secondary {
+        background: transparent;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        color: white;
+    }
+
+    .mentor-btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.8);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .mentor-card {
+            padding: 2rem 1.5rem;
+            margin: 1rem;
+            border-radius: 16px;
+        }
+
+        .mentor-title {
+            font-size: 1.8rem;
+        }
+
+        .mentor-icon {
+            font-size: 3rem;
+        }
+
+        .mentor-btn {
+            padding: 0.6rem 1.5rem;
+            margin: 0.25rem;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="d-flex align-items-center justify-content-center min-vh-100 bg-light">
-    <div class="card shadow-lg p-4 rounded-4 text-center" style="width: 100%; max-width: 480px;">
-        <div class="card-body">
-            <i class="bi bi-search text-primary" style="font-size: 3rem;"></i>
-            <h2 class="fw-bold text-primary mt-3">We’re Finding Your Mentor</h2>
-            <p class="text-muted mt-2">
-                Thank you for completing the survey. Based on your answers, we’ll recommend the most suitable teacher to mentor you.
-            </p>
-
-            <!-- New Find Mentor Button -->
-            <a href="{{ url_for('ml.match') }}" class="btn btn-primary">Find My Mentor</a>
-
-            <!-- Optional: Back to Profile -->
-            <a href="{{ url_for('main.profile') }}" class="btn btn-outline-secondary mt-2 rounded-3 px-4">
-                <i class="bi bi-arrow-left me-2"></i> Back to Profile
-            </a>
-        </div>
+<div class="d-flex align-items-center justify-content-center min-vh-100">
+    <div class="mentor-card">
+        <i class="bi bi-search mentor-icon"></i>
+        <h2 class="mentor-title">We're Finding Your Mentor</h2>
+        <p class="mentor-description">
+            Thank you for completing the survey. Based on your answers, we'll recommend the most suitable teacher to mentor you.
+        </p>
+        <!-- Find Mentor Button -->
+        <a href="{{ url_for('ml.match') }}" class="mentor-btn mentor-btn-primary">
+            <i class="bi bi-person-heart me-2"></i>Find My Mentor
+        </a>
+        <br>
+        <!-- Back to Profile -->
+        <a href="{{ url_for('main.profile') }}" class="mentor-btn mentor-btn-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Back to Profile
+        </a>
     </div>
 </div>
 {% endblock %}
