@@ -1,16 +1,33 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="project-description">
-    <h2>🎯 Recommended Mentors</h2>
-    <div style="text-align: left; max-width: 600px; margin: 0 auto;">
-        {% for name, score in matches %}
-        <div style="background: rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1rem; margin-bottom: 1rem; border: 1px solid rgba(255, 255, 255, 0.2);">
-            <strong style="color: #4facfe; font-size: 1.1rem;">{{ name }}</strong>
-            <br>
-            <span style="color: rgba(255, 255, 255, 0.9);">Compatibility Score: {{ score }}</span>
-        </div>
-        {% endfor %}
-    </div>
+<div class="container mt-5 text-white">
+<h2 class="mb-4 text-center">🎯 Recommended Mentors</h2>
+
+    {% for name, score, teacher_id, is_signed_up in matches %}
+<div class="card bg-dark text-white mb-4 p-3 shadow" style="border-radius: 1rem;">
+<h5 class="card-title">{{ name }}</h5>
+
+        <div class="progress my-2" style="height: 20px; background-color: #ccc;">
+<div class="progress-bar bg-info" role="progressbar"
+                style="width: {{ score * 100 }}%;" aria-valuenow="{{ score * 100 }}"
+                aria-valuemin="0" aria-valuemax="100">
+                {{ (score * 100) | round(0) }}%
+</div>
+</div>
+
+        {% if is_signed_up %}
+<div class="alert alert-success mt-2 p-2 rounded" role="alert">
+                You’ve signed up with this mentor!
+</div>
+        {% else %}
+<form method="POST" action="{{ url_for('ml.signup_mentor', teacher_id=teacher_id) }}">
+<button type="submit" class="btn btn-outline-primary btn-sm mt-2">
+                Sign Up with Mentor
+</button>
+</form>
+        {% endif %}
+</div>
+    {% endfor %}
 </div>
 {% endblock %}
