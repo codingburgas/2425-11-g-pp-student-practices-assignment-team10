@@ -17,12 +17,16 @@ def index():
 @login_required
 def profile():
     has_survey = False
+    mentees = []  # Added to track students assigned to this teacher
+
     if current_user.role == 'student':
         has_survey = StudentSurveyResponse.query.filter_by(student_id=current_user.id).first() is not None
     elif current_user.role == 'teacher':
         has_survey = TeacherSurveyResponse.query.filter_by(teacher_id=current_user.id).first() is not None
+        # Get all students who listed this teacher in 'future_study'
+        mentees = StudentSurveyResponse.query.filter_by(mentor_id=current_user.id).all()
 
-    return render_template('profile.html', user=current_user, has_survey=has_survey)
+    return render_template('profile.html', user=current_user, has_survey=has_survey, mentees=mentees)
 
 
 @main_bp.route('/admin/users')
@@ -57,10 +61,9 @@ def delete_user(user_id):
 @main_bp.route('/edit-profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
-    form = EditProfileForm(obj=current_user)  # pre-fill with current user data
+    form = EditProfileForm(obj=current_user)
 
     if form.validate_on_submit():
-        # Check if the username or email is being changed to something that already exists
         if form.username.data != current_user.username and User.query.filter_by(username=form.username.data).first():
             flash('Username already taken.')
             return redirect(url_for('main.edit_profile'))
