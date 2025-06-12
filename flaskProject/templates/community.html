@@ -19,14 +19,16 @@
                     {% else %}
                         <p>No survey data available.</p>
                     {% endif %}
+
                 {% elif user.role == 'teacher' %}
                     {% set response = teacher_responses.get(user.id) %}
                     {% if response %}
+                        <p><strong>Favourite Subject to Mentor:</strong> {{ response.favorite_subjects_to_mentor }}</p>
                         <p><strong>Mentees:</strong>
                             {% if user.mentees %}
                                 <ul>
-                                    {% for mentee in user.mentees %}
-                                        <li>{{ mentee.student.username }}</li>
+                                    {% for mentee_response in user.mentees %}
+                                        <li>{{ mentee_response.student.username }}</li>
                                     {% endfor %}
                                 </ul>
                             {% else %}
