@@ -82,3 +82,16 @@ def edit_profile():
         return redirect(url_for('main.profile'))
 
     return render_template('edit_profile.html', form=form)
+
+@main_bp.route('/community')
+@login_required
+def community():
+    users = User.query.all()
+
+    # Map user ID to survey responses
+    student_responses = {resp.student_id: resp for resp in StudentSurveyResponse.query.all()}
+    teacher_responses = {resp.teacher_id: resp for resp in TeacherSurveyResponse.query.all()}
+
+    return render_template('community.html', users=users,
+                           student_responses=student_responses,
+                           teacher_responses=teacher_responses)

@@ -468,39 +468,46 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url_for('main.index') }}">
-                <img src="{{ url_for('static', filename='Logo.png') }}" alt="Logo">
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-lg-center gap-2">
-                    {% if current_user.is_authenticated %}
-                        <li class="nav-item">
-                            <span class="nav-link disabled">Hi, {{ current_user.username }}</span>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('auth.logout') }}">
-                                <i class="bi bi-box-arrow-right me-1"></i>Logout
-                            </a>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('auth.login') }}">
-                                <i class="bi bi-box-arrow-in-right me-1"></i>Login
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('auth.register') }}">
-                                <i class="bi bi-person-plus-fill me-1"></i>Register
-                            </a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
+    <div class="container">
+        <a class="navbar-brand" href="{{ url_for('main.index') }}">
+            <img src="{{ url_for('static', filename='Logo.png') }}" alt="Logo">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-2">
+                <!-- Community Page Link -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('main.community') }}">
+                        <i class="bi bi-people-fill me-1"></i>Community
+                    </a>
+                </li>
+
+                {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <span class="nav-link disabled">Hi, {{ current_user.username }}</span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.logout') }}">
+                            <i class="bi bi-box-arrow-right me-1"></i>Logout
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.login') }}">
+                            <i class="bi bi-box-arrow-in-right me-1"></i>Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.register') }}">
+                            <i class="bi bi-person-plus-fill me-1"></i>Register
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
         </div>
+    </div>
     </nav>
 
     <main class="container py-4">
@@ -539,10 +546,10 @@
         <div class="project-description">
             <h2>🎓 PathFinder - School Prediction System</h2>
             <p>
-                Discover the perfect educational path for <span class="highlight">seventh graders</span> with our intelligent school prediction system.
+                Discover the perfect educational path for <span class="highlight">tenth graders</span> with our intelligent school prediction system.
             </p>
             <p>
-                Using advanced algorithms and comprehensive data analysis, PathFinder evaluates student profiles, academic performance, interests, and preferences to recommend the most suitable schools that align with each student's unique potential and goals.
+                Using advanced algorithms and comprehensive data analysis, PathFinder evaluates student profiles, academic performance, interests, and preferences to recommend the most suitable mentors that align with each student's unique potential and goals.
             </p>
             <p>
                 <strong>Empowering students to make informed decisions about their educational future.</strong>

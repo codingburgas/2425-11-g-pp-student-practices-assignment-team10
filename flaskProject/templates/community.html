@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Community{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Community Overview</h2>
+
+    {% for user in users %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ user.username }} ({{ user.role|capitalize }})</h5>
+                <p>Email: {{ user.email }}</p>
+
+                {% if user.role == 'student' %}
+                    {% set response = student_responses.get(user.id) %}
+                    {% if response %}
+                        <p><strong>Mentor:</strong> {{ response.mentor.username if response.mentor else 'Not assigned' }}</p>
+                    {% else %}
+                        <p>No survey data available.</p>
+                    {% endif %}
+                {% elif user.role == 'teacher' %}
+                    {% set response = teacher_responses.get(user.id) %}
+                    {% if response %}
+                        <p><strong>Mentees:</strong>
+                            {% if user.mentees %}
+                                <ul>
+                                    {% for mentee in user.mentees %}
+                                        <li>{{ mentee.student.username }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                None assigned
+                            {% endif %}
+                        </p>
+                    {% else %}
+                        <p>No survey data available.</p>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
