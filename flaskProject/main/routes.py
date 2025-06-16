@@ -1,30 +1,38 @@
+"""Defines the routes for the main blueprint, including profile, admin, and community features."""
+
 from flaskProject.form.models import StudentSurveyResponse, TeacherSurveyResponse
-from flask import render_template, redirect, url_for, flash, session
+from flask import render_template, redirect, url_for, flash, session, request
 from flask_login import login_required, current_user
 from flaskProject.auth.models import User
 from .. import db
 from . import main_bp
-from flask import request
 from flaskProject.auth.forms import EditProfileForm
 from .models import Comment
 
 @main_bp.route('/')
 def index():
+    """Render the home page."""
     return render_template('index.html')
 
 
 @main_bp.route('/profile')
 @login_required
 def profile():
+    """
+    Display the user's profile page.
+
+    Shows survey status and assigned mentees if the user is a teacher.
+    """
     if session.get("prediction"):
         session["prediction"] = None
+
     has_survey = False
-    mentees = []  # Added to track students assigned to this teacher
+    mentees = []
+
     if current_user.role == 'student':
         has_survey = StudentSurveyResponse.query.filter_by(student_id=current_user.id).first() is not None
     elif current_user.role == 'teacher':
         has_survey = TeacherSurveyResponse.query.filter_by(teacher_id=current_user.id).first() is not None
-        # Get all students who listed this teacher in 'future_study'
         mentees = StudentSurveyResponse.query.filter_by(mentor_id=current_user.id).all()
 
     return render_template('profile.html', user=current_user, has_survey=has_survey, mentees=mentees)
@@ -33,6 +41,9 @@ def profile():
 @main_bp.route('/admin/users')
 @login_required
 def admin_users():
+    """
+    Display a list of all users to admin users only.
+    """
     if not current_user.is_admin:
         flash("Unauthorized")
         return redirect(url_for('main.index'))
@@ -44,6 +55,9 @@ def admin_users():
 @main_bp.route('/admin/delete/<int:user_id>', methods=['POST'])
 @login_required
 def delete_user(user_id):
+    """
+    Delete a user account (admin-only). Prevents deletion of the main admin.
+    """
     if not current_user.is_admin:
         flash("Unauthorized")
         return redirect(url_for('main.index'))
@@ -62,6 +76,10 @@ def delete_user(user_id):
 @main_bp.route('/edit-profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
+    """
+    Allow a logged-in user to edit their profile information.
+    Validates uniqueness of username and email.
+    """
     form = EditProfileForm(obj=current_user)
 
     if form.validate_on_submit():
@@ -84,12 +102,14 @@ def edit_profile():
 
     return render_template('edit_profile.html', form=form)
 
+
 @main_bp.route('/community')
 @login_required
 def community():
+    """
+    Display all users and their survey responses in a community view.
+    """
     users = User.query.all()
-
-    # Map user ID to survey responses
     student_responses = {resp.student_id: resp for resp in StudentSurveyResponse.query.all()}
     teacher_responses = {resp.teacher_id: resp for resp in TeacherSurveyResponse.query.all()}
 
@@ -101,6 +121,11 @@ def community():
 @main_bp.route('/profile/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def view_profile(user_id):
+    """
+    View another user's profile and post a comment.
+
+    Handles both GET (view profile) and POST (submit comment) methods.
+    """
     user = User.query.get_or_404(user_id)
     comments = Comment.query.filter_by(user_id=user_id).order_by(Comment.timestamp.desc()).all()
 
