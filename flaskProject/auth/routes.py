@@ -1,3 +1,8 @@
+"""
+This module defines the authentication-related routes including login,
+registration, and logout using Flask Blueprint.
+"""
+
 from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, current_user, login_required
 
@@ -9,8 +14,13 @@ from .. import db
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
+    """
+    Handle user login.
+    Redirects to profile page on success or displays error message on failure.
+    If user is already logged in, redirects to profile.
+    """
     if current_user.is_authenticated:
-        return redirect(url_for('main.profile'))  # Changed from index to profile
+        return redirect(url_for('main.profile'))
 
     form = LoginForm()
     if form.validate_on_submit():
@@ -29,6 +39,11 @@ def login():
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
+    """
+    Handle new user registration.
+    Validates input, checks for existing users, and stores new user in database.
+    Admin role is granted based on specific conditions.
+    """
     if current_user.is_authenticated:
         return redirect(url_for('main.profile'))
 
@@ -41,17 +56,18 @@ def register():
             flash('Email already registered')
             return redirect(url_for('auth.register'))
 
+        # Grant admin privileges based on strict conditions
         is_admin = (
-                form.username.data == 'admin' and
-                form.password.data == 'adminadmin' and
-                form.role.data == 'teacher'
+            form.username.data == 'admin' and
+            form.password.data == 'adminadmin' and
+            form.role.data == 'teacher'
         )
 
         user = User(
             username=form.username.data,
             email=form.email.data,
             role=form.role.data,
-            is_admin=is_admin  # set the flag
+            is_admin=is_admin
         )
         user.set_password(form.password.data)
         db.session.add(user)
@@ -65,5 +81,8 @@ def register():
 @auth_bp.route('/logout')
 @login_required
 def logout():
+    """
+    Log the user out and redirect to homepage.
+    """
     logout_user()
     return redirect(url_for('main.index'))
