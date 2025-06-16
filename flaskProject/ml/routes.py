@@ -1,4 +1,4 @@
-from flask import render_template, Blueprint, redirect, url_for
+from flask import render_template, Blueprint, redirect, url_for, session
 from flask_login import login_required, current_user
 from .model import LogisticRegression
 from .utils import encode_features
@@ -15,18 +15,20 @@ def match():
     if not student_data or not teachers:
         return render_template('no_data.html')
     matches = []
-    for teacher in teachers:
-        features = encode_features(student_data, teacher)
-        model = LogisticRegression(n_features=len(features))
-        score = model.predict_proba(features)
-        matches.append((
-            teacher.teacher.username,
-            round(score, 2),
-            teacher.teacher.id,  # teacher_id
-            student_data.mentor_id == teacher.teacher.id  # is_signed_up
-        ))
-    matches.sort(key=lambda x: x[1], reverse=True)
-    return render_template('matches.html', matches=matches)
+    if not session.get('prediction'):
+        for teacher in teachers:
+            features = encode_features(student_data, teacher)
+            model = LogisticRegression(n_features=len(features))
+            score = model.predict_proba(features)
+            matches.append((
+                teacher.teacher.username,
+                round(score, 2),
+                teacher.teacher.id,  # teacher_id
+                student_data.mentor_id == teacher.teacher.id  # is_signed_up
+            ))
+        matches.sort(key=lambda x: x[1], reverse=True)
+        session['prediction'] = matches
+    return render_template('matches.html', matches=session['prediction'])
 
 @ml_bp.route('/match/signup/<int:teacher_id>', methods=['POST'])
 @login_required

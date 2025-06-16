@@ -1,5 +1,5 @@
 from flaskProject.form.models import StudentSurveyResponse, TeacherSurveyResponse
-from flask import render_template, redirect, url_for, flash
+from flask import render_template, redirect, url_for, flash, session
 from flask_login import login_required, current_user
 from flaskProject.auth.models import User
 from .. import db
@@ -16,9 +16,10 @@ def index():
 @main_bp.route('/profile')
 @login_required
 def profile():
+    if session.get("prediction"):
+        session["prediction"] = None
     has_survey = False
     mentees = []  # Added to track students assigned to this teacher
-
     if current_user.role == 'student':
         has_survey = StudentSurveyResponse.query.filter_by(student_id=current_user.id).first() is not None
     elif current_user.role == 'teacher':
