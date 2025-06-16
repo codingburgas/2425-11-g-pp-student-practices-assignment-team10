@@ -1,3 +1,5 @@
+"""Define route handlers for student and teacher survey submission and mentor matching."""
+
 from flask import render_template, redirect, url_for, flash
 from flask_login import login_required, current_user
 from . import form_bp
@@ -9,17 +11,23 @@ from flaskProject import db
 @form_bp.route('/survey/student', methods=['GET', 'POST'])
 @login_required
 def student_survey():
+    """
+    Handle student survey display and submission.
+
+    - GET: Renders the survey form.
+    - POST: Saves form responses to the database, if not previously submitted.
+    """
     if current_user.role != 'student':
         flash("Only students can access this survey.", "warning")
         return redirect(url_for('main.profile'))
+
     form = StudentSurveyForm()
     if form.validate_on_submit():
-        # Проверка дали вече е попълнил анкетата
         existing_response = StudentSurveyResponse.query.filter_by(student_id=current_user.id).first()
         if existing_response:
             flash("You have already submitted this survey.", "info")
             return redirect(url_for('main.profile'))
-        # Създаване на нов запис
+
         response = StudentSurveyResponse(
             student_id=current_user.id,
             favorite_subject=form.favorite_subject.data,
@@ -34,12 +42,19 @@ def student_survey():
         db.session.commit()
         flash("Survey submitted successfully!", "success")
         return redirect(url_for('form.find_mentor'))
+
     return render_template('surveys/student_survey.html', form=form)
 
 
 @form_bp.route('/survey/teacher', methods=['GET', 'POST'])
 @login_required
 def teacher_survey():
+    """
+    Handle teacher survey display and submission.
+
+    - GET: Renders the teacher survey form.
+    - POST: Saves form responses to the database, if not previously submitted.
+    """
     if current_user.role != 'teacher':
         flash("Only teachers can access this survey.", "warning")
         return redirect(url_for('main.profile'))
@@ -70,9 +85,15 @@ def teacher_survey():
 
     return render_template('surveys/teacher_survey.html', form=form)
 
+
 @form_bp.route('/survey/find-mentor')
 @login_required
 def find_mentor():
+    """
+    Render the mentor matching results page for students.
+
+    Access restricted to users with the 'student' role.
+    """
     if current_user.role != 'student':
         flash("Only students can access this page.", "warning")
         return redirect(url_for('main.dashboard'))

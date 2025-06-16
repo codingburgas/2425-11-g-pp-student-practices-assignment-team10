@@ -1,8 +1,23 @@
+"""Define WTForms-based survey forms for students and teachers."""
+
 from flask_wtf import FlaskForm
 from wtforms import RadioField, SubmitField
 from wtforms.validators import DataRequired
 
+
 class StudentSurveyForm(FlaskForm):
+    """
+    Survey form for student users to indicate preferences and aspirations.
+
+    Fields include:
+    - Favorite subject
+    - Learning style
+    - Personal strengths
+    - Desired future study area
+    - Classroom behavior
+    - Preferred extracurricular activities
+    - Long-term goal
+    """
     favorite_subject = RadioField('What is your favorite school subject?', choices=[
         ('math', 'Mathematics'),
         ('bulgarian', 'Bulgarian Language and Literature'),
@@ -12,12 +27,14 @@ class StudentSurveyForm(FlaskForm):
         ('science', 'Biology / Chemistry'),
         ('arts', 'Arts')
     ], validators=[DataRequired()])
+
     learning_style = RadioField('How do you prefer to learn new things?', choices=[
         ('hands_on', 'Through hands-on tasks and experiments'),
         ('listening', 'By listening and taking notes'),
         ('reading', 'By reading independently'),
         ('discussion', 'In group discussions and teamwork')
     ], validators=[DataRequired()])
+
     strength = RadioField('What is your greatest strength?', choices=[
         ('logic', 'Logical thinking and analysis'),
         ('communication', 'Communication and expression'),
@@ -25,6 +42,7 @@ class StudentSurveyForm(FlaskForm):
         ('organization', 'Organization and self-discipline'),
         ('tech', 'Working with technology')
     ], validators=[DataRequired()])
+
     future_study = RadioField('What do you want to study in the future?', choices=[
         ('programming', 'Programming / IT'),
         ('humanities', 'Languages and humanities'),
@@ -33,12 +51,14 @@ class StudentSurveyForm(FlaskForm):
         ('business', 'Business and economics'),
         ('undecided', 'I’m not sure yet')
     ], validators=[DataRequired()])
+
     class_behavior = RadioField('How would you describe yourself in the classroom?', choices=[
         ('active', 'Always an active participant'),
         ('thinker', 'I like to listen and reflect'),
         ('helper', 'I enjoy helping others'),
         ('independent', 'I prefer working independently')
     ], validators=[DataRequired()])
+
     activities = RadioField('What extracurricular activities do you enjoy the most?', choices=[
         ('competitions', 'Competitions in math, science, or programming'),
         ('journalism', 'Theater, writing, journalism'),
@@ -46,6 +66,7 @@ class StudentSurveyForm(FlaskForm):
         ('volunteering', 'Volunteering, student council'),
         ('sports', 'Sports and physical activities')
     ], validators=[DataRequired()])
+
     goal = RadioField('What is your biggest goal after school?', choices=[
         ('abroad', 'To study abroad'),
         ('career', 'To start a career in a specific field'),
@@ -53,10 +74,22 @@ class StudentSurveyForm(FlaskForm):
         ('discover', 'To discover my calling'),
         ('helping', 'To help people')
     ], validators=[DataRequired()])
+
     submit = SubmitField('Submit')
 
 
 class TeacherSurveyForm(FlaskForm):
+    """
+    Survey form for teacher users to specify mentoring preferences and strengths.
+
+    Fields include:
+    - Favorite subjects to mentor
+    - Teaching style
+    - Mentoring strengths
+    - Preferred student types
+    - Favorite extracurricular focus
+    - Mentorship goals
+    """
     favorite_subjects_to_mentor = RadioField(
         'Which subject do you enjoy mentoring in the most?',
         choices=[
