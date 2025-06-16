@@ -4,67 +4,98 @@
 
 {% block content %}
 <div class="d-flex justify-content-center align-items-center min-vh-80 py-5">
-<div class="card shadow-lg p-4 rounded-4 text-center" style="width: 100%; max-width: 500px;">
-<div class="card-body">
-<div class="mb-4">
-<i class="bi bi-person-circle text-primary" style="font-size: 3rem;"></i>
-</div>
-<h2 class="fw-bold text-primary">Welcome, {{ user.username }}!</h2>
-<p class="text-muted mb-1">Email: <span class="fw-semibold">{{ user.email }}</span></p>
-<p class="text-muted mb-3">Role: <span class="fw-semibold text-capitalize">{{ user.role }}</span></p>
+  <div class="card shadow-lg p-4 rounded-4 text-center" style="width: 100%; max-width: 500px;">
+    <div class="card-body">
+      <div class="mb-4">
+        <i class="bi bi-person-circle text-primary" style="font-size: 3rem;"></i>
+      </div>
+      <h2 class="fw-bold text-primary">Welcome, {{ user.username }}!</h2>
+      <p class="text-muted mb-1">Email: <span class="fw-semibold">{{ user.email }}</span></p>
+      <p class="text-muted mb-3">Role: <span class="fw-semibold text-capitalize">{{ user.role }}</span></p>
 
-      <!-- ✅ Edit Profile Button First -->
-<div class="mb-2">
-<a href="{{ url_for('main.edit_profile') }}" class="btn btn-glassmorphism w-100">
-<i class="bi bi-pencil-square me-2"></i>Edit Profile
-</a>
-</div>
+      <!-- Edit Profile Button -->
+      <div class="mb-2">
+        <a href="{{ url_for('main.edit_profile') }}" class="btn btn-glassmorphism w-100">
+          <i class="bi bi-pencil-square me-2"></i>Edit Profile
+        </a>
+      </div>
 
-      <!-- ✅ Conditional Button Second -->
+      <!-- Conditional Actions -->
       {% if user.role == 'student' %}
         {% if not has_survey %}
-<a href="{{ url_for('form.student_survey') }}" class="btn btn-primary-gradient btn-lg w-100 mb-2">
-<i class="bi bi-ui-checks me-2"></i>Fill Student Survey
-</a>
+          <a href="{{ url_for('form.student_survey') }}" class="btn btn-primary-gradient btn-lg w-100 mb-2">
+            <i class="bi bi-ui-checks me-2"></i>Fill Student Survey
+          </a>
         {% else %}
-<a href="{{ url_for('ml.match') }}" class="btn btn-success-gradient btn-lg w-100 mb-2">
-<i class="bi bi-search me-2"></i>Find a Mentor
-</a>
+          <a href="{{ url_for('ml.match') }}" class="btn btn-success-gradient btn-lg w-100 mb-2">
+            <i class="bi bi-search me-2"></i>Find a Mentor
+          </a>
         {% endif %}
       {% elif user.role == 'teacher' %}
         {% if not has_survey %}
-<a href="{{ url_for('form.teacher_survey') }}" class="btn btn-success-gradient btn-lg w-100 mb-2">
-<i class="bi bi-person-badge me-2"></i>Fill Mentor Profile
-</a>
+          <a href="{{ url_for('form.teacher_survey') }}" class="btn btn-success-gradient btn-lg w-100 mb-2">
+            <i class="bi bi-person-badge me-2"></i>Fill Mentor Profile
+          </a>
         {% endif %}
       {% endif %}
-</div>
-</div>
+    </div>
+  </div>
 </div>
 
-<!-- Mentor View Section -->
+<!-- Assigned Mentees (for teachers) -->
 {% if user.role == 'teacher' and mentees %}
-<div class="container mt-5">
-<div class="card shadow-lg p-4 rounded-4">
-<h4 class="text-primary mb-3">🎓 Your Assigned Students</h4>
-<ul class="list-group">
+  <div class="container mt-5">
+    <div class="card shadow-lg p-4 rounded-4">
+      <h4 class="text-primary mb-3">🎓 Your Assigned Students</h4>
+      <ul class="list-group">
         {% for student in mentees %}
-<li class="list-group-item bg-dark text-white d-flex justify-content-between align-items-center">
-<div>
-<strong>{{ student.student.username }}</strong><br>
-<small>Email: {{ student.student.email }}</small>
-</div>
-<span class="badge bg-info text-dark">ID: {{ student.student_id }}</span>
-</li>
+        <li class="list-group-item bg-dark text-white d-flex justify-content-between align-items-center">
+          <div>
+            <strong>{{ student.student.username }}</strong><br>
+            <small>Email: {{ student.student.email }}</small>
+          </div>
+          <span class="badge bg-info text-dark">ID: {{ student.student_id }}</span>
+        </li>
         {% endfor %}
-</ul>
-</div>
-</div>
+      </ul>
+    </div>
+  </div>
 {% elif user.role == 'teacher' %}
-<div class="container mt-5 text-center text-muted">
-<p>No students have signed up with you yet.</p>
-</div>
+  <div class="container mt-5 text-center text-muted">
+    <p>No students have signed up with you yet.</p>
+  </div>
 {% endif %}
+
+<!-- Comments Section -->
+<div class="container mt-5">
+  <div class="card shadow-lg p-4 rounded-4">
+    <h4 class="text-primary mb-4">🗨️ Comments</h4>
+
+    <!-- Comment Form: only visible to profile owner -->
+    {% if current_user.is_authenticated and current_user.id == user.id %}
+    <form method="POST" class="mb-4">
+      <div class="mb-3">
+        <textarea name="content" rows="3" class="form-control" placeholder="Write your comment..." required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary-gradient w-100">Post Comment</button>
+    </form>
+    {% endif %}
+
+    <!-- Display Comments -->
+    {% if comments %}
+      {% for comment in comments %}
+        <div class="mb-3 p-3 border rounded bg-dark text-white">
+          <strong>{{ comment.user.username }}</strong>
+
+          <small class="text-muted float-end">{{ comment.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
+          <p class="mt-2 mb-0">{{ comment.content }}</p>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="text-muted">No comments yet.</p>
+    {% endif %}
+  </div>
+</div>
 
 <style>
 /* Dashboard Button Styles - Matching base.html glassmorphism design */

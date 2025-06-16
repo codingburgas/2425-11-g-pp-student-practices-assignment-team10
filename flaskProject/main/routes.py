@@ -6,7 +6,7 @@ from .. import db
 from . import main_bp
 from flask import request
 from flaskProject.auth.forms import EditProfileForm
-
+from .models import Comment
 
 @main_bp.route('/')
 def index():
@@ -96,3 +96,23 @@ def community():
     return render_template('community.html', users=users,
                            student_responses=student_responses,
                            teacher_responses=teacher_responses)
+
+
+@main_bp.route('/profile/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+def view_profile(user_id):
+    user = User.query.get_or_404(user_id)
+    comments = Comment.query.filter_by(user_id=user_id).order_by(Comment.timestamp.desc()).all()
+
+    if request.method == 'POST':
+        content = request.form.get('content')
+        if content:
+            new_comment = Comment(content=content, user_id=current_user.id)
+            db.session.add(new_comment)
+            db.session.commit()
+            flash('Comment posted successfully!', 'success')
+            return redirect(url_for('main.view_profile', user_id=user_id))
+        else:
+            flash('Comment cannot be empty.', 'danger')
+
+    return render_template('profile.html', user=user, comments=comments)

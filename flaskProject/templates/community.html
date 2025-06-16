@@ -11,7 +11,7 @@
             <div class="card-body">
                 <h5 class="card-title">{{ user.username }} ({{ user.role|capitalize }})</h5>
                 <p>Email: {{ user.email }}</p>
-
+                <a href="{{ url_for('main.view_profile', user_id=user.id) }}" class="btn btn-outline-secondary btn-sm mt-2">View Profile</a>
                 {% if user.role == 'student' %}
                     {% set response = student_responses.get(user.id) %}
                     {% if response %}
