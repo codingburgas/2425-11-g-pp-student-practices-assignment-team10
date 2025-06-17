@@ -2,45 +2,477 @@
 
 {% block title %}Community{% endblock %}
 
+{% block styles %}
+<style>
+    /* Community-specific styles */
+    .community-header {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        padding: 2.5rem;
+        margin: 2rem 0;
+        text-align: center;
+        color: white;
+        animation: headerFadeIn 1s ease-out both;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .community-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+        animation: headerShimmer 4s ease-in-out infinite;
+    }
+
+    .community-header h2 {
+        font-weight: 700;
+        margin-bottom: 1rem;
+        font-size: 2.5rem;
+        background: linear-gradient(45deg, #4facfe, #00f2fe, #4facfe);
+        background-size: 200% 200%;
+        animation: textShine 3s ease-in-out infinite;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .community-header p {
+        font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin: 0;
+    }
+
+    @keyframes headerFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    @keyframes headerShimmer {
+        0% { left: -100%; }
+        50% { left: 100%; }
+        100% { left: 100%; }
+    }
+
+    @keyframes textShine {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* User cards with glassmorphism */
+    .user-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        animation: cardSlideIn 0.6s ease-out both;
+    }
+
+    .user-card:nth-child(even) {
+        animation-delay: 0.1s;
+    }
+
+    .user-card:nth-child(odd) {
+        animation-delay: 0.2s;
+    }
+
+    .user-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+        transition: left 0.6s ease;
+    }
+
+    .user-card:hover::before {
+        left: 100%;
+    }
+
+    .user-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    @keyframes cardSlideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .user-card .card-body {
+        padding: 2rem;
+        color: white;
+        position: relative;
+        z-index: 2;
+    }
+
+    .user-card .card-title {
+        font-weight: 700;
+        font-size: 1.4rem;
+        margin-bottom: 1rem;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .role-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+    }
+
+    .role-badge.student {
+        background: linear-gradient(45deg, #4facfe, #00f2fe);
+        color: white;
+        box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+    }
+
+    .role-badge.teacher {
+        background: linear-gradient(45deg, #fa709a, #fee140);
+        color: white;
+        box-shadow: 0 4px 15px rgba(250, 112, 154, 0.3);
+    }
+
+    .role-badge.admin {
+        background: linear-gradient(45deg, #a8edea, #fed6e3);
+        color: #333;
+        box-shadow: 0 4px 15px rgba(168, 237, 234, 0.3);
+    }
+
+    .user-info {
+        margin-bottom: 1rem;
+    }
+
+    .user-info p {
+        margin-bottom: 0.5rem;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.95rem;
+    }
+
+    .user-info strong {
+        color: #4facfe;
+        font-weight: 600;
+    }
+
+    .mentees-list, .mentor-info {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-top: 1rem;
+        border-left: 3px solid #4facfe;
+    }
+
+    .mentees-list ul {
+        margin: 0;
+        padding-left: 1.2rem;
+    }
+
+    .mentees-list li {
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 0.3rem;
+        transition: color 0.3s ease;
+    }
+
+    .mentees-list li:hover {
+        color: #4facfe;
+    }
+
+    .no-data {
+        color: rgba(255, 255, 255, 0.6);
+        font-style: italic;
+        font-size: 0.9rem;
+    }
+
+    /* Enhanced buttons */
+    .btn-view-profile {
+        background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.2));
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        padding: 0.6rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .btn-view-profile:hover {
+        background: linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.3));
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+
+    .btn-view-profile i {
+        transition: transform 0.3s ease;
+    }
+
+    .btn-view-profile:hover i {
+        transform: translateX(3px);
+    }
+
+    /* Stats section */
+    .community-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
+        padding: 1.5rem;
+        text-align: center;
+        color: white;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        transition: all 0.5s ease;
+        transform: scale(0);
+    }
+
+    .stat-card:hover::before {
+        transform: scale(1);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #4facfe;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.8);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Icon styling */
+    .user-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, #4facfe, #00f2fe);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .teacher-icon {
+        background: linear-gradient(45deg, #fa709a, #fee140);
+    }
+
+    .admin-icon {
+        background: linear-gradient(45deg, #a8edea, #fed6e3);
+        color: #333;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .community-header {
+            padding: 2rem 1.5rem;
+            margin: 1rem;
+        }
+
+        .community-header h2 {
+            font-size: 2rem;
+        }
+
+        .user-card .card-body {
+            padding: 1.5rem;
+        }
+
+        .community-stats {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-card {
+            padding: 1rem;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .community-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .user-card .card-title {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container mt-5">
-    <h2 class="mb-4">Community Overview</h2>
+<div class="community-header">
+    <h2><i class="bi bi-people-fill me-3"></i>Community Overview</h2>
+    <p>Connect with students, teachers, and mentors in our learning community</p>
+</div>
 
+<!-- Community Statistics -->
+<div class="community-stats">
+    <div class="stat-card">
+        <span class="stat-number">{{ users|selectattr("role", "equalto", "student")|list|length }}</span>
+        <span class="stat-label">Students</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-number">{{ users|selectattr("role", "equalto", "teacher")|list|length }}</span>
+        <span class="stat-label">Teachers</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-number">{{ users|length }}</span>
+        <span class="stat-label">Total Members</span>
+    </div>
+</div>
+
+<!-- User Cards -->
+<div class="users-container">
     {% for user in users %}
-        <div class="card mb-3">
+        <div class="user-card">
             <div class="card-body">
-                <h5 class="card-title">{{ user.username }} ({{ user.role|capitalize }})</h5>
-                <p>Email: {{ user.email }}</p>
-                <a href="{{ url_for('main.view_profile', user_id=user.id) }}" class="btn btn-outline-secondary btn-sm mt-2">View Profile</a>
-                {% if user.role == 'student' %}
-                    {% set response = student_responses.get(user.id) %}
-                    {% if response %}
-                        <p><strong>Mentor:</strong> {{ response.mentor.username if response.mentor else 'Not assigned' }}</p>
-                    {% else %}
-                        <p>No survey data available.</p>
-                    {% endif %}
+                <h5 class="card-title">
+                    <div class="user-icon {% if user.role == 'teacher' %}teacher-icon{% elif user.role == 'admin' %}admin-icon{% endif %}">
+                        {% if user.role == 'student' %}
+                            <i class="bi bi-person-fill"></i>
+                        {% elif user.role == 'teacher' %}
+                            <i class="bi bi-mortarboard-fill"></i>
+                        {% else %}
+                            <i class="bi bi-shield-fill"></i>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <div>{{ user.username }}</div>
+                        <span class="role-badge {{ user.role }}">{{ user.role }}</span>
+                    </div>
+                </h5>
 
-                {% elif user.role == 'teacher' %}
-                    {% set response = teacher_responses.get(user.id) %}
-                    {% if response %}
-                        <p><strong>Favourite Subject to Mentor:</strong> {{ response.favorite_subjects_to_mentor }}</p>
-                        <p><strong>Mentees:</strong>
+                <div class="user-info">
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+
+                    {% if user.role == 'student' %}
+                        {% set response = student_responses.get(user.id) %}
+                        {% if response %}
+                            <div class="mentor-info">
+                                <p><strong><i class="bi bi-person-badge me-2"></i>Mentor:</strong>
+                                    {% if response.mentor %}
+                                        <span style="color: #4facfe;">{{ response.mentor.username }}</span>
+                                    {% else %}
+                                        <span class="no-data">Not assigned yet</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        {% else %}
+                            <p class="no-data"><i class="bi bi-info-circle me-2"></i>No survey data available</p>
+                        {% endif %}
+
+                    {% elif user.role == 'teacher' %}
+                        {% set response = teacher_responses.get(user.id) %}
+                        {% if response %}
+                            <p><strong><i class="bi bi-book me-2"></i>Favorite Subject to Mentor:</strong> {{ response.favorite_subjects_to_mentor }}</p>
+
                             {% if user.mentees %}
-                                <ul>
-                                    {% for mentee_response in user.mentees %}
-                                        <li>{{ mentee_response.student.username }}</li>
-                                    {% endfor %}
-                                </ul>
+                                <div class="mentees-list">
+                                    <p><strong><i class="bi bi-people me-2"></i>Mentees:</strong></p>
+                                    <ul>
+                                        {% for mentee_response in user.mentees %}
+                                            <li><i class="bi bi-arrow-right me-2"></i>{{ mentee_response.student.username }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
                             {% else %}
-                                None assigned
+                                <p class="no-data"><i class="bi bi-info-circle me-2"></i>No mentees assigned yet</p>
                             {% endif %}
-                        </p>
-                    {% else %}
-                        <p>No survey data available.</p>
+                        {% else %}
+                            <p class="no-data"><i class="bi bi-info-circle me-2"></i>No survey data available</p>
+                        {% endif %}
                     {% endif %}
-                {% endif %}
+                </div>
+
+                <a href="{{ url_for('main.view_profile', user_id=user.id) }}" class="btn-view-profile">
+                    <i class="bi bi-eye"></i>
+                    View Profile
+                </a>
             </div>
         </div>
     {% endfor %}
 </div>
+
+{% if not users %}
+<div class="user-card">
+    <div class="card-body text-center">
+        <i class="bi bi-people" style="font-size: 3rem; color: rgba(255, 255, 255, 0.3); margin-bottom: 1rem;"></i>
+        <h5 style="color: rgba(255, 255, 255, 0.7);">No community members yet</h5>
+        <p class="no-data">Be the first to join our learning community!</p>
+    </div>
+</div>
+{% endif %}
 {% endblock %}
