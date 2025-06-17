@@ -29,6 +29,10 @@ https://github.com/codingburgas/2425-11-g-pp-student-practices-assignment-team10
 <h3> ➤ <a href="docs/Documentation.docx">Documentation</a><img src="https://cdn.worldvectorlogo.com/logos/word-1.svg" alt="Word" width="30" height="20"/> </h3>
 <h3> ➤ <a href="docs/Presentation.pptx">Presentation </a><img src="https://cdn.worldvectorlogo.com/logos/powerpoint-2.svg" alt="PowerPoint" width="30" height="20"/> </h3>
 
+<h1>🌐 UML Diagrams</h1>
+<p><a href="https://lucid.app/lucidchart/cf4857b2-1337-467d-ba6a-fd7e3df27386/edit?viewport_loc=317%2C-62%2C2858%2C1177%2C0_0&invitationId=inv_f3026f0a-0be6-4ab8-838e-a9438a93a286
+ ">Entity Relationship diagram</a></p>
+
 <h1>💻 Used Technologies</h1>
   
 <p>
