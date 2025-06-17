@@ -73,7 +73,7 @@
 
     <!-- Comment Form: only visible to profile owner -->
     {% if current_user.is_authenticated and current_user.id == user.id %}
-    <form method="POST" class="mb-4">
+    <form method="POST" class="mb-4" action="{{ url_for('main.view_profile', user_id=user.id) }}">
       <div class="mb-3">
         <textarea name="content" rows="3" class="form-control" placeholder="Write your comment..." required></textarea>
       </div>
