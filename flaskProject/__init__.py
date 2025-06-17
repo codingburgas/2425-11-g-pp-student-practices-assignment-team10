@@ -28,7 +28,15 @@ def create_app(config):
         Flask: The fully configured Flask application instance.
     """
     app = Flask(__name__)
-    app.config.from_object(config)
+    if config == 'testing':
+        app.config.from_mapping({
+            'TESTING': True,
+            'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:',
+            'WTF_CSRF_ENABLED': False,
+            'SECRET_KEY': 'test',
+        })
+    else:
+        app.config.from_object(config)
 
     # Initialize extensions with the app
     db.init_app(app)
