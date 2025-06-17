@@ -1,16 +1,535 @@
 {% extends "base.html" %}
+
+{% block title %}Admin Dashboard - PathFinder{% endblock %}
+
+{% block styles %}
+<style>
+    /* Admin Dashboard Specific Styles */
+    .admin-dashboard {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        padding: 2.5rem;
+        margin: 2rem 0;
+        color: white;
+        animation: dashboardFadeIn 0.8s ease-out;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .admin-dashboard::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+        animation: dashboardShimmer 4s ease-in-out infinite;
+    }
+
+    @keyframes dashboardFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    @keyframes dashboardShimmer {
+        0% { left: -100%; }
+        50% { left: 100%; }
+        100% { left: 100%; }
+    }
+
+    .admin-dashboard h2 {
+        font-weight: 700;
+        margin-bottom: 2rem;
+        font-size: 2.2rem;
+        background: linear-gradient(45deg, #4facfe, #00f2fe, #4facfe);
+        background-size: 200% 200%;
+        animation: textShine 3s ease-in-out infinite;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    @keyframes textShine {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    .admin-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(15px);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transition: left 0.6s ease;
+    }
+
+    .stat-card:hover::before {
+        left: 100%;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .stat-card .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #4facfe;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 0 20px rgba(79, 172, 254, 0.5);
+    }
+
+    .stat-card .stat-label {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.8);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .users-grid {
+        display: grid;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .user-card {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(15px);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1.5rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        animation: userCardFadeIn 0.6s ease-out;
+    }
+
+    .user-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+        transition: left 0.6s ease;
+    }
+
+    .user-card:hover::before {
+        left: 100%;
+    }
+
+    .user-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    @keyframes userCardFadeIn {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .user-info {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .user-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, #4facfe, #00f2fe);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: white;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+    }
+
+    .user-details h4 {
+        margin: 0;
+        font-weight: 600;
+        color: white;
+        font-size: 1.1rem;
+    }
+
+    .user-details p {
+        margin: 0.25rem 0 0 0;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+    }
+
+    .user-role {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 0.5rem;
+    }
+
+    .user-role.admin {
+        background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+        color: white;
+        box-shadow: 0 2px 10px rgba(255, 107, 107, 0.3);
+    }
+
+    .user-role.student {
+        background: linear-gradient(45deg, #4facfe, #00f2fe);
+        color: white;
+        box-shadow: 0 2px 10px rgba(79, 172, 254, 0.3);
+    }
+
+    .user-role.teacher {
+        background: linear-gradient(45deg, #55a3ff, #003d82);
+        color: white;
+        box-shadow: 0 2px 10px rgba(85, 163, 255, 0.3);
+    }
+
+    .user-actions {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .btn-delete {
+        background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+        border: none;
+        border-radius: 50px;
+        color: white;
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    }
+
+    .btn-delete::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .btn-delete:hover::before {
+        left: 100%;
+    }
+
+    .btn-delete:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255, 107, 107, 0.5);
+    }
+
+    .btn-delete:active {
+        transform: translateY(0);
+        transition: transform 0.1s ease;
+    }
+
+    .btn-delete i {
+        margin-right: 0.5rem;
+    }
+
+    .admin-protected {
+        color: rgba(255, 255, 255, 0.6);
+        font-style: italic;
+        font-size: 0.85rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        color: rgba(255, 255, 255, 0.3);
+    }
+
+    .search-section {
+        margin-bottom: 2rem;
+    }
+
+    .search-input {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 50px;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        width: 100%;
+        max-width: 400px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .search-input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: rgba(79, 172, 254, 0.5);
+        box-shadow: 0 0 0 0.25rem rgba(79, 172, 254, 0.25);
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .admin-dashboard {
+            padding: 2rem 1.5rem;
+            margin: 1rem;
+        }
+
+        .admin-dashboard h2 {
+            font-size: 1.8rem;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .admin-stats {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .user-card {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .user-info {
+            width: 100%;
+        }
+
+        .user-actions {
+            width: 100%;
+            justify-content: flex-end;
+        }
+    }
+
+    /* Loading animation for dynamic content */
+    .loading {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
+    .loading::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 20px;
+        height: 20px;
+        margin: -10px 0 0 -10px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top: 2px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<h2>Registered Users</h2>
-<ul>
-    {% for user in users %}
-<li>
-        {{ user.username }} ({{ user.email }}) - {{ user.role }}
-        {% if user.username != 'admin' %}
-<form action="{{ url_for('main.delete_user', user_id=user.id) }}" method="post" style="display:inline;">
-<button type="submit" onclick="return confirm('Are you sure?')">Delete</button>
-</form>
+<div class="admin-dashboard">
+    <h2>
+        <i class="bi bi-shield-check"></i>
+        Admin Dashboard
+    </h2>
+
+    <!-- Statistics Cards -->
+    <div class="admin-stats">
+        <div class="stat-card">
+            <div class="stat-number">{{ users|length }}</div>
+            <div class="stat-label">Total Users</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ users|selectattr('role', 'equalto', 'student')|list|length }}</div>
+            <div class="stat-label">Students</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ users|selectattr('role', 'equalto', 'teacher')|list|length }}</div>
+            <div class="stat-label">Teachers</div>
+        </div>
+    </div>
+
+    <!-- Search Section -->
+    <div class="search-section">
+        <input type="text" class="search-input" placeholder="🔍 Search users..." id="userSearch" onkeyup="filterUsers()">
+    </div>
+
+    <!-- Users Grid -->
+    <div class="users-grid" id="usersGrid">
+        {% if users %}
+            {% for user in users %}
+            <div class="user-card" data-username="{{ user.username.lower() }}" data-email="{{ user.email.lower() }}" data-role="{{ user.role.lower() }}">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        {{ user.username[0].upper() }}
+                    </div>
+                    <div class="user-details">
+                        <h4>{{ user.username }}</h4>
+                        <p>{{ user.email }}</p>
+                        <span class="user-role {{ user.role.lower() }}">{{ user.role }}</span>
+                    </div>
+                </div>
+                <div class="user-actions">
+                    {% if user.username != 'admin' %}
+                        <form action="{{ url_for('main.delete_user', user_id=user.id) }}" method="post" style="display:inline;" onsubmit="return confirmDelete('{{ user.username }}')">
+                            <button type="submit" class="btn-delete">
+                                <i class="bi bi-trash3"></i>Delete
+                            </button>
+                        </form>
+                    {% else %}
+                        <span class="admin-protected">
+                            <i class="bi bi-shield-lock"></i> Protected
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="bi bi-people"></i>
+                <h3>No Users Found</h3>
+                <p>The system currently has no registered users.</p>
+            </div>
         {% endif %}
-</li>
-    {% endfor %}
-</ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Search functionality
+    function filterUsers() {
+        const searchTerm = document.getElementById('userSearch').value.toLowerCase();
+        const userCards = document.querySelectorAll('.user-card');
+
+        userCards.forEach(card => {
+            const username = card.getAttribute('data-username');
+            const email = card.getAttribute('data-email');
+            const role = card.getAttribute('data-role');
+
+            if (username.includes(searchTerm) || email.includes(searchTerm) || role.includes(searchTerm)) {
+                card.style.display = 'flex';
+                card.style.animation = 'userCardFadeIn 0.3s ease-out';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    // Enhanced delete confirmation
+    function confirmDelete(username) {
+        return confirm(`⚠️ Are you sure you want to delete user "${username}"?\n\nThis action cannot be undone and will permanently remove all user data.`);
+    }
+
+    // Add loading state to delete buttons
+    document.querySelectorAll('.btn-delete').forEach(button => {
+        button.addEventListener('click', function() {
+            if (this.closest('form').onsubmit()) {
+                this.innerHTML = '<i class="bi bi-hourglass-split"></i> Deleting...';
+                this.disabled = true;
+                this.closest('.user-card').classList.add('loading');
+            }
+        });
+    });
+
+    // Auto-focus search input on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('userSearch');
+        if (searchInput) {
+            searchInput.focus();
+        }
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        // Ctrl/Cmd + F to focus search
+        if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+            e.preventDefault();
+            document.getElementById('userSearch').focus();
+        }
+
+        // Escape to clear search
+        if (e.key === 'Escape') {
+            const searchInput = document.getElementById('userSearch');
+            if (searchInput.value) {
+                searchInput.value = '';
+                filterUsers();
+            }
+        }
+    });
+</script>
 {% endblock %}
