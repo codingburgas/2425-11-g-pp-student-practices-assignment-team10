@@ -8,7 +8,7 @@ of the app with different configurations.
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-
+from flask_session import Session
 # Initialize SQLAlchemy and LoginManager without an app context
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -41,7 +41,8 @@ def create_app(config):
     # Initialize extensions with the app
     db.init_app(app)
     login_manager.init_app(app)
-
+    app.config["SESSION_TYPE"] = "filesystem"
+    Session(app)
     from .auth import auth_bp
     from .main import main_bp
     from .form import form_bp
