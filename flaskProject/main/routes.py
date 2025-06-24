@@ -9,13 +9,65 @@ from . import main_bp
 from flaskProject.auth.forms import EditProfileForm
 from .models import Comment
 from ..utils.error_handler import render_error_page
-
+from flaskProject.ml.model import LogisticRegression
+from flaskProject.ml.utils import encode_features
+import numpy as np
 
 @main_bp.route('/')
 def index():
-    """Render the home page."""
+    """
+    Render the home page and train the AI model using existing or synthetic survey data.
+    """
     try:
-        return render_template('index.html')
+        students = StudentSurveyResponse.query.all()
+        teachers = {t.teacher_id: t for t in TeacherSurveyResponse.query.all()}
+
+        dataset = []
+        for student in students:
+            if not teachers:
+                continue
+
+            # If real mentor is assigned, use it as positive
+            if student.mentor_id and student.mentor_id in teachers:
+                real_mentor = teachers[student.mentor_id]
+                features = encode_features(student, real_mentor)
+                dataset.append(features + [1])  # Positive
+
+                # Add negatives
+                for tid, teacher in teachers.items():
+                    if tid != student.mentor_id:
+                        features = encode_features(student, teacher)
+                        dataset.append(features + [0])
+            else:
+                # 🔁 Generate synthetic label: randomly assume one teacher is a match
+                import random
+                positive_teacher_id = random.choice(list(teachers.keys()))
+                for tid, teacher in teachers.items():
+                    label = 1 if tid == positive_teacher_id else 0
+                    features = encode_features(student, teacher)
+                    dataset.append(features + [label])
+
+        if dataset:
+            import numpy as np
+            from flaskProject.ml.model import LogisticRegression
+
+            n_features = len(dataset[0]) - 1
+            model = LogisticRegression(n_features=n_features)
+            model.train(dataset, epochs=1000, learning_rate=0.001)
+
+            X = np.array([d[:-1] for d in dataset])
+            y_true = np.array([d[-1] for d in dataset])
+            y_pred = np.array([model.predict_class(x) for x in X])
+            acc = np.mean(y_pred == y_true)
+
+            session["model_weights"] = model.weights.tolist()
+            session["model_bias"] = model.bias
+            session["model_accuracy"] = round(acc * 100, 2)
+        else:
+            session["model_accuracy"] = "N/A"
+
+        return render_template('index.html', model_accuracy=session["model_accuracy"])
+
     except Exception as e:
         return render_error_page(e)
 
