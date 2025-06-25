@@ -12,62 +12,68 @@ from ..utils.error_handler import render_error_page
 from flaskProject.ml.model import LogisticRegression
 from flaskProject.ml.utils import encode_features
 import numpy as np
+from flaskProject.utils.metrics import compute_metrics
 
 @main_bp.route('/')
 def index():
     """
-    Render the home page and train the AI model using existing or synthetic survey data.
+    Render the home page and train the AI model using existing survey data.
     """
     try:
-        students = StudentSurveyResponse.query.all()
+        students = StudentSurveyResponse.query.filter(StudentSurveyResponse.mentor_id.isnot(None)).all()
         teachers = {t.teacher_id: t for t in TeacherSurveyResponse.query.all()}
-
         dataset = []
+
         for student in students:
-            if not teachers:
+            mentor = teachers.get(student.mentor_id)
+            if not mentor:
                 continue
+            features = encode_features(student, mentor)
+            dataset.append(features + [1])
 
-            # If real mentor is assigned, use it as positive
-            if student.mentor_id and student.mentor_id in teachers:
-                real_mentor = teachers[student.mentor_id]
-                features = encode_features(student, real_mentor)
-                dataset.append(features + [1])  # Positive
-
-                # Add negatives
-                for tid, teacher in teachers.items():
-                    if tid != student.mentor_id:
-                        features = encode_features(student, teacher)
-                        dataset.append(features + [0])
-            else:
-                # 🔁 Generate synthetic label: randomly assume one teacher is a match
-                import random
-                positive_teacher_id = random.choice(list(teachers.keys()))
-                for tid, teacher in teachers.items():
-                    label = 1 if tid == positive_teacher_id else 0
-                    features = encode_features(student, teacher)
-                    dataset.append(features + [label])
+            for other_id, other_teacher in teachers.items():
+                if other_id != student.mentor_id:
+                    features = encode_features(student, other_teacher)
+                    dataset.append(features + [0])
 
         if dataset:
-            import numpy as np
-            from flaskProject.ml.model import LogisticRegression
-
             n_features = len(dataset[0]) - 1
             model = LogisticRegression(n_features=n_features)
-            model.train(dataset, epochs=1000, learning_rate=0.001)
+            model.train(dataset, epochs=50, learning_rate=0.01)
 
             X = np.array([d[:-1] for d in dataset])
             y_true = np.array([d[-1] for d in dataset])
             y_pred = np.array([model.predict_class(x) for x in X])
-            acc = np.mean(y_pred == y_true)
+            y_proba = np.array([model.predict_proba(x) for x in X])
 
+            # Save model weights and bias
             session["model_weights"] = model.weights.tolist()
             session["model_bias"] = model.bias
-            session["model_accuracy"] = round(acc * 100, 2)
+
+            # Save metrics
+            metrics = compute_metrics(y_true, y_pred, y_proba)
+            session["model_metrics"] = metrics
         else:
-            session["model_accuracy"] = "N/A"
+            session["model_metrics"] = None
+            session["model_weights"] = None
+            session["model_bias"] = None
 
-        return render_template('index.html', model_accuracy=session["model_accuracy"])
+        return render_template('index.html', model_accuracy=session["model_metrics"]["accuracy"] if session["model_metrics"] else "N/A")
+    except Exception as e:
+        return render_error_page(e)
 
+@main_bp.route('/metrics')
+@login_required
+def model_metrics():
+    """
+    Display evaluation metrics for the latest trained model.
+    """
+    try:
+        metrics = session.get("model_metrics")
+        if not metrics:
+            flash("Model has not been trained yet or there is no data.", "warning")
+            return redirect(url_for("main.index"))
+        return render_template("metrics.html", metrics=metrics)
     except Exception as e:
         return render_error_page(e)
 
