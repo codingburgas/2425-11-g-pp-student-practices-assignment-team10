@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>🧠 Model Evaluation Metrics</h2>
+    <table class="table table-bordered mt-3">
+        <thead class="table-light">
+            <tr>
+                <th>Metric</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>Accuracy</td><td>{{ metrics.accuracy }}%</td></tr>
+            <tr><td>Precision</td><td>{{ metrics.precision }}%</td></tr>
+            <tr><td>Recall</td><td>{{ metrics.recall }}%</td></tr>
+            <tr><td>F1 Score</td><td>{{ metrics.f1_score }}%</td></tr>
+            <tr><td>Log Loss</td><td>{{ metrics.log_loss }}</td></tr>
+        </tbody>
+    </table>
+    <a href="{{ url_for('main.index') }}" class="btn btn-secondary">Back to Home</a>
+</div>
+{% endblock %}
