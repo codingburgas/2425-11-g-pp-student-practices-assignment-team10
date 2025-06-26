@@ -1,23 +1,473 @@
 {% extends 'base.html' %}
 
+{% block title %}Model Evaluation{% endblock %}
+
+{% block styles %}
+<style>
+    /* Metrics-specific styles */
+    .metrics-header {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        padding: 2.5rem;
+        margin: 2rem 0;
+        text-align: center;
+        color: white;
+        animation: headerFadeIn 1s ease-out both;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .metrics-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+        animation: headerShimmer 4s ease-in-out infinite;
+    }
+
+    .metrics-header h2 {
+        font-weight: 700;
+        margin-bottom: 1rem;
+        font-size: 2.5rem;
+        background: linear-gradient(45deg, #4facfe, #00f2fe, #4facfe);
+        background-size: 200% 200%;
+        animation: textShine 3s ease-in-out infinite;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .metrics-header p {
+        font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin: 0;
+    }
+
+    @keyframes headerFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    @keyframes headerShimmer {
+        0% { left: -100%; }
+        50% { left: 100%; }
+        100% { left: 100%; }
+    }
+
+    @keyframes textShine {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* Enhanced metrics table */
+    .metrics-container {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin: 2rem 0;
+        position: relative;
+        overflow: hidden;
+        animation: containerSlideIn 0.8s ease-out both;
+    }
+
+    .metrics-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+        animation: containerShimmer 6s ease-in-out infinite;
+    }
+
+    @keyframes containerSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(50px) scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    @keyframes containerShimmer {
+        0% { left: -100%; }
+        50% { left: 100%; }
+        100% { left: 100%; }
+    }
+
+    .metrics-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        background: transparent;
+        position: relative;
+        z-index: 2;
+    }
+
+    .metrics-table thead th {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        font-weight: 700;
+        padding: 1.5rem 2rem;
+        text-align: left;
+        font-size: 1.1rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        border: none;
+        position: relative;
+    }
+
+    .metrics-table thead th:first-child {
+        border-top-left-radius: 15px;
+        border-bottom-left-radius: 15px;
+    }
+
+    .metrics-table thead th:last-child {
+        border-top-right-radius: 15px;
+        border-bottom-right-radius: 15px;
+    }
+
+    .metrics-table tbody tr {
+        animation: rowFadeIn 0.6s ease-out both;
+        transition: all 0.3s ease;
+    }
+
+    .metrics-table tbody tr:nth-child(1) { animation-delay: 0.1s; }
+    .metrics-table tbody tr:nth-child(2) { animation-delay: 0.2s; }
+    .metrics-table tbody tr:nth-child(3) { animation-delay: 0.3s; }
+    .metrics-table tbody tr:nth-child(4) { animation-delay: 0.4s; }
+    .metrics-table tbody tr:nth-child(5) { animation-delay: 0.5s; }
+
+    @keyframes rowFadeIn {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .metrics-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.05);
+        transform: translateX(10px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .metrics-table tbody td {
+        padding: 1.5rem 2rem;
+        border: none;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1rem;
+        position: relative;
+    }
+
+    .metrics-table tbody td:first-child {
+        font-weight: 600;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .metrics-table tbody td:last-child {
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: #4facfe;
+    }
+
+    /* Metric icons */
+    .metric-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .accuracy-icon {
+        background: linear-gradient(45deg, #4facfe, #00f2fe);
+    }
+
+    .precision-icon {
+        background: linear-gradient(45deg, #fa709a, #fee140);
+    }
+
+    .recall-icon {
+        background: linear-gradient(45deg, #a8edea, #fed6e3);
+        color: #333;
+    }
+
+    .f1-icon {
+        background: linear-gradient(45deg, #ffecd2, #fcb69f);
+        color: #333;
+    }
+
+    .loss-icon {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+    }
+
+    /* Enhanced back button */
+    .btn-back {
+        background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.2));
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        padding: 0.8rem 2rem;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-top: 2rem;
+        font-size: 1rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-back::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transition: left 0.6s ease;
+    }
+
+    .btn-back:hover::before {
+        left: 100%;
+    }
+
+    .btn-back:hover {
+        background: linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.3));
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-back i {
+        transition: transform 0.3s ease;
+    }
+
+    .btn-back:hover i {
+        transform: translateX(-3px);
+    }
+
+    /* Performance indicator bars */
+    .performance-bar {
+        width: 100%;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        margin-top: 0.5rem;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .performance-fill {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 1.5s ease-in-out;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .performance-fill::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        animation: barShimmer 2s ease-in-out infinite;
+    }
+
+    @keyframes barShimmer {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+
+    .accuracy-bar .performance-fill {
+        background: linear-gradient(45deg, #4facfe, #00f2fe);
+    }
+
+    .precision-bar .performance-fill {
+        background: linear-gradient(45deg, #fa709a, #fee140);
+    }
+
+    .recall-bar .performance-fill {
+        background: linear-gradient(45deg, #a8edea, #fed6e3);
+    }
+
+    .f1-bar .performance-fill {
+        background: linear-gradient(45deg, #ffecd2, #fcb69f);
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .metrics-header {
+            padding: 2rem 1.5rem;
+            margin: 1rem;
+        }
+
+        .metrics-header h2 {
+            font-size: 2rem;
+        }
+
+        .metrics-container {
+            padding: 1.5rem;
+            margin: 1rem;
+        }
+
+        .metrics-table thead th,
+        .metrics-table tbody td {
+            padding: 1rem;
+        }
+
+        .metrics-table tbody td:first-child {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .metrics-table {
+            font-size: 0.9rem;
+        }
+
+        .metrics-table thead th,
+        .metrics-table tbody td {
+            padding: 0.8rem;
+        }
+
+        .btn-back {
+            padding: 0.6rem 1.5rem;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
-    <h2>🧠 Model Evaluation Metrics</h2>
-    <table class="table table-bordered mt-3">
-        <thead class="table-light">
-            <tr>
-                <th>Metric</th>
-                <th>Value</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr><td>Accuracy</td><td>{{ metrics.accuracy }}%</td></tr>
-            <tr><td>Precision</td><td>{{ metrics.precision }}%</td></tr>
-            <tr><td>Recall</td><td>{{ metrics.recall }}%</td></tr>
-            <tr><td>F1 Score</td><td>{{ metrics.f1_score }}%</td></tr>
-            <tr><td>Log Loss</td><td>{{ metrics.log_loss }}</td></tr>
-        </tbody>
-    </table>
-    <a href="{{ url_for('main.index') }}" class="btn btn-secondary">Back to Home</a>
+    <div class="metrics-header">
+        <h2><i class="bi bi-graph-up me-3"></i>Model Evaluation Metrics</h2>
+        <p>Comprehensive performance analysis of your machine learning model</p>
+    </div>
+
+    <div class="metrics-container">
+        <table class="metrics-table">
+            <thead>
+                <tr>
+                    <th>Performance Metric</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="metric-icon accuracy-icon">
+                            <i class="bi bi-bullseye"></i>
+                        </div>
+                        <div>
+                            <div>Accuracy</div>
+                            <div class="performance-bar accuracy-bar">
+                                <div class="performance-fill" style="width: {{ metrics.accuracy }}%"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ metrics.accuracy }}%</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="metric-icon precision-icon">
+                            <i class="bi bi-crosshair"></i>
+                        </div>
+                        <div>
+                            <div>Precision</div>
+                            <div class="performance-bar precision-bar">
+                                <div class="performance-fill" style="width: {{ metrics.precision }}%"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ metrics.precision }}%</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="metric-icon recall-icon">
+                            <i class="bi bi-search"></i>
+                        </div>
+                        <div>
+                            <div>Recall</div>
+                            <div class="performance-bar recall-bar">
+                                <div class="performance-fill" style="width: {{ metrics.recall }}%"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ metrics.recall }}%</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="metric-icon f1-icon">
+                            <i class="bi bi-speedometer2"></i>
+                        </div>
+                        <div>
+                            <div>F1 Score</div>
+                            <div class="performance-bar f1-bar">
+                                <div class="performance-fill" style="width: {{ metrics.f1_score }}%"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ metrics.f1_score }}%</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="metric-icon loss-icon">
+                            <i class="bi bi-graph-down"></i>
+                        </div>
+                        <div>Log Loss</div>
+                    </td>
+                    <td>{{ metrics.log_loss }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-center">
+        <a href="{{ url_for('main.index') }}" class="btn-back">
+            <i class="bi bi-house-fill"></i>
+            Back to Home
+        </a>
+    </div>
 </div>
 {% endblock %}
