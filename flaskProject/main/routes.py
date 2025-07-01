@@ -17,50 +17,48 @@ from flaskProject.utils.metrics import compute_metrics
 @main_bp.route('/')
 def index():
     """
-    Render the home page and train the AI model using existing survey data.
+    Render the home page and train the AI model using all student-teacher pairs.
     """
     try:
-        students = StudentSurveyResponse.query.filter(StudentSurveyResponse.mentor_id.isnot(None)).all()
+        students = StudentSurveyResponse.query.all()
         teachers = {t.teacher_id: t for t in TeacherSurveyResponse.query.all()}
         dataset = []
 
         for student in students:
-            mentor = teachers.get(student.mentor_id)
-            if not mentor:
-                continue
-            features = encode_features(student, mentor)
-            dataset.append(features + [1])
-
-            for other_id, other_teacher in teachers.items():
-                if other_id != student.mentor_id:
-                    features = encode_features(student, other_teacher)
-                    dataset.append(features + [0])
+            for teacher_id, teacher in teachers.items():
+                features = encode_features(student, teacher)
+                label = 1 if student.mentor_id == teacher_id else 0
+                dataset.append(features + [label])
 
         if dataset:
+
             n_features = len(dataset[0]) - 1
             model = LogisticRegression(n_features=n_features)
-            model.train(dataset, epochs=50, learning_rate=0.01)
+            model.train(dataset, epochs=10000, learning_rate=0.0001)
 
             X = np.array([d[:-1] for d in dataset])
             y_true = np.array([d[-1] for d in dataset])
             y_pred = np.array([model.predict_class(x) for x in X])
             y_proba = np.array([model.predict_proba(x) for x in X])
 
-            # Save model weights and bias
+            # Save model state
             session["model_weights"] = model.weights.tolist()
             session["model_bias"] = model.bias
 
-            # Save metrics
-            metrics = compute_metrics(y_true, y_pred, y_proba)
-            session["model_metrics"] = metrics
+
+            session["model_metrics"] = compute_metrics(y_true, y_pred, y_proba)
         else:
             session["model_metrics"] = None
             session["model_weights"] = None
             session["model_bias"] = None
-
-        return render_template('index.html', model_accuracy=session["model_metrics"]["accuracy"] if session["model_metrics"] else "N/A")
+        print(session["model_metrics"])
+        return render_template(
+            'index.html',
+            model_accuracy=session["model_metrics"]["accuracy"] if session["model_metrics"] else "N/A"
+        )
     except Exception as e:
         return render_error_page(e)
+
 
 @main_bp.route('/metrics')
 @login_required
@@ -69,7 +67,7 @@ def model_metrics():
     Display evaluation metrics for the latest trained model.
     """
     try:
-        metrics = session.get("model_metrics")
+        metrics = session["model_metrics"]
         if not metrics:
             flash("Model has not been trained yet or there is no data.", "warning")
             return redirect(url_for("main.index"))
@@ -194,7 +192,7 @@ def community():
     except Exception as e:
         return render_error_page(e)
 
-@main_bp.route('/profile/<int:user_id>', methods=['GET', 'POST'])
+@main_bp.route('/view_profile/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def view_profile(user_id):
     """
