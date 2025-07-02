@@ -1,104 +1,96 @@
 {% extends "base.html" %}
-
 {% block title %}Dashboard{% endblock %}
-
 {% block content %}
 <div class="d-flex justify-content-center align-items-center min-vh-80 py-5">
-  <div class="card shadow-lg p-4 rounded-4 text-center" style="width: 100%; max-width: 500px;">
-    <div class="card-body">
-      <div class="mb-4">
-        <i class="bi bi-person-circle text-primary" style="font-size: 3rem;"></i>
-      </div>
-      <h2 class="fw-bold text-primary">Welcome, {{ user.username }}!</h2>
-      <p class="text-muted mb-1">Email: <span class="fw-semibold">{{ user.email }}</span></p>
-      <p class="text-muted mb-3">Role: <span class="fw-semibold text-capitalize">{{ user.role }}</span></p>
-
-      <!-- Edit Profile Button -->
-      <div class="mb-2">
-        <a href="{{ url_for('main.edit_profile') }}" class="btn btn-glassmorphism w-100">
-          <i class="bi bi-pencil-square me-2"></i>Edit Profile
-        </a>
-      </div>
-
-      <!-- Conditional Actions -->
-      {% if user.role == 'student' %}
-        {% if not has_survey %}
-          <a href="{{ url_for('form.student_survey') }}" class="btn btn-primary-gradient btn-lg w-100 mb-2">
-            <i class="bi bi-ui-checks me-2"></i>Fill Student Survey
-          </a>
-        {% else %}
-          <a href="{{ url_for('ml.match') }}" class="btn btn-success-gradient btn-lg w-100 mb-2">
-            <i class="bi bi-search me-2"></i>Find a Mentor
-          </a>
-        {% endif %}
-      {% elif user.role == 'teacher' %}
-        {% if not has_survey %}
-          <a href="{{ url_for('form.teacher_survey') }}" class="btn btn-success-gradient btn-lg w-100 mb-2">
-            <i class="bi bi-person-badge me-2"></i>Fill Mentor Profile
-          </a>
+<div class="card shadow-lg p-4 rounded-4 text-center" style="width: 100%; max-width: 500px;">
+<div class="card-body">
+<div class="mb-4">
+<i class="bi bi-person-circle text-primary" style="font-size: 3rem;"></i>
+</div>
+<h2 class="fw-bold text-primary">Welcome, {{ user.username }}!</h2>
+<p class="text-muted mb-1">Email: <span class="fw-semibold">{{ user.email }}</span></p>
+<p class="text-muted mb-3">Role: <span class="fw-semibold text-capitalize">{{ user.role }}</span></p>
+      {% if current_user.id == user.id %}
+<!-- Edit Profile Button -->
+<div class="mb-2">
+<a href="{{ url_for('main.edit_profile') }}" class="btn btn-glassmorphism w-100">
+<i class="bi bi-pencil-square me-2"></i>Edit Profile
+</a>
+</div>
+<!-- Conditional Actions -->
+        {% if user.role == 'student' %}
+          {% if not has_survey %}
+<a href="{{ url_for('form.student_survey') }}" class="btn btn-primary-gradient btn-lg w-100 mb-2">
+<i class="bi bi-ui-checks me-2"></i>Fill Student Survey
+</a>
+          {% else %}
+<a href="{{ url_for('ml.match') }}" class="btn btn-success-gradient btn-lg w-100 mb-2">
+<i class="bi bi-search me-2"></i>Find a Mentor
+</a>
+          {% endif %}
+        {% elif user.role == 'teacher' %}
+          {% if not has_survey %}
+<a href="{{ url_for('form.teacher_survey') }}" class="btn btn-success-gradient btn-lg w-100 mb-2">
+<i class="bi bi-person-badge me-2"></i>Fill Mentor Profile
+</a>
+          {% endif %}
         {% endif %}
       {% endif %}
-    </div>
-  </div>
 </div>
-
+</div>
+</div>
 <!-- Assigned Mentees (for teachers) -->
 {% if user.role == 'teacher' and mentees %}
-  <div class="container mt-5">
-    <div class="card shadow-lg p-4 rounded-4">
-      <h4 class="text-primary mb-3">🎓 Your Assigned Students</h4>
-      <ul class="list-group">
+<div class="container mt-5">
+<div class="card shadow-lg p-4 rounded-4">
+<h4 class="text-primary mb-3">🎓 Your Assigned Students</h4>
+<ul class="list-group">
         {% for student in mentees %}
-        <li class="list-group-item bg-dark text-white d-flex justify-content-between align-items-center">
-          <div>
-            <strong>{{ student.student.username }}</strong><br>
-            <small>Email: {{ student.student.email }}</small>
-          </div>
-          <span class="badge bg-info text-dark">ID: {{ student.student_id }}</span>
-        </li>
+<li class="list-group-item bg-dark text-white d-flex justify-content-between align-items-center">
+<div>
+<strong>{{ student.student.username }}</strong><br>
+<small>Email: {{ student.student.email }}</small>
+</div>
+<span class="badge bg-info text-dark">ID: {{ student.student_id }}</span>
+</li>
         {% endfor %}
-      </ul>
-    </div>
-  </div>
+</ul>
+</div>
+</div>
 {% elif user.role == 'teacher' %}
-  <div class="container mt-5 text-center text-muted">
-    <p>No students have signed up with you yet.</p>
-  </div>
+<div class="container mt-5 text-center text-muted">
+<p>No students have signed up with you yet.</p>
+</div>
 {% endif %}
-
 <!-- Comments Section -->
 <div class="container mt-5">
-  <div class="card shadow-lg p-4 rounded-4">
-    <h4 class="text-primary mb-4">🗨️ Comments</h4>
-
-    <!-- Comment Form: only visible to profile owner -->
+<div class="card shadow-lg p-4 rounded-4">
+<h4 class="text-primary mb-4">🗨️ Comments</h4>
+<!-- Comment Form: only visible to profile owner -->
     {% if current_user.is_authenticated and current_user.id == user.id %}
-    <form method="POST" class="mb-4" action="{{ url_for('main.view_profile', user_id=user.id) }}">
-      <div class="mb-3">
-        <textarea name="content" rows="3" class="form-control" placeholder="Write your comment..." required></textarea>
-      </div>
-      <button type="submit" class="btn btn-primary-gradient w-100">Post Comment</button>
-    </form>
+<form method="POST" class="mb-4" action="{{ url_for('main.view_profile', user_id=user.id) }}">
+<div class="mb-3">
+<textarea name="content" rows="3" class="form-control" placeholder="Write your comment..." required></textarea>
+</div>
+<button type="submit" class="btn btn-primary-gradient w-100">Post Comment</button>
+</form>
     {% endif %}
-
-    <!-- Display Comments -->
+<!-- Display Comments -->
     {% if comments %}
       {% for comment in comments %}
-        <div class="mb-3 p-3 border rounded bg-dark text-white">
-          <strong>{{ comment.user.username }}</strong>
-
-          <small class="text-muted float-end">{{ comment.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
-          <p class="mt-2 mb-0">{{ comment.content }}</p>
-        </div>
+<div class="mb-3 p-3 border rounded bg-dark text-white">
+<strong>{{ comment.user.username }}</strong>
+<small class="text-muted float-end">{{ comment.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
+<p class="mt-2 mb-0">{{ comment.content }}</p>
+</div>
       {% endfor %}
     {% else %}
-      <p class="text-muted">No comments yet.</p>
+<p class="text-muted">No comments yet.</p>
     {% endif %}
-  </div>
 </div>
-
+</div>
 <style>
-/* Dashboard Button Styles - Matching base.html glassmorphism design */
+/* All styles remain unchanged */
 .btn-glassmorphism {
   background: rgba(255, 255, 255, 0.15) !important;
   backdrop-filter: blur(20px);
@@ -114,7 +106,6 @@
   position: relative;
   overflow: hidden;
 }
-
 .btn-glassmorphism::before {
   content: '';
   position: absolute;
@@ -125,11 +116,9 @@
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
   transition: left 0.5s ease;
 }
-
 .btn-glassmorphism:hover::before {
   left: 100%;
 }
-
 .btn-glassmorphism:hover {
   background: rgba(255, 255, 255, 0.25) !important;
   border-color: rgba(255, 255, 255, 0.4) !important;
@@ -137,7 +126,6 @@
   box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
   color: white !important;
 }
-
 .btn-primary-gradient {
   background: linear-gradient(45deg, #4facfe, #00f2fe) !important;
   border: none !important;
@@ -152,7 +140,6 @@
   position: relative;
   overflow: hidden;
 }
-
 .btn-primary-gradient::before {
   content: '';
   position: absolute;
@@ -163,17 +150,14 @@
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
   transition: left 0.5s ease;
 }
-
 .btn-primary-gradient:hover::before {
   left: 100%;
 }
-
 .btn-primary-gradient:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 35px rgba(79, 172, 254, 0.6);
   color: white !important;
 }
-
 .btn-success-gradient {
   background: linear-gradient(45deg, #56ab2f, #a8e6cf) !important;
   border: none !important;
@@ -188,7 +172,6 @@
   position: relative;
   overflow: hidden;
 }
-
 .btn-success-gradient::before {
   content: '';
   position: absolute;
@@ -199,33 +182,26 @@
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
   transition: left 0.5s ease;
 }
-
 .btn-success-gradient:hover::before {
   left: 100%;
 }
-
 .btn-success-gradient:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 35px rgba(86, 171, 47, 0.6);
   color: white !important;
 }
-
-/* Enhanced card styling to match base.html */
 .card {
   background: rgba(255, 255, 255, 0.1) !important;
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
   color: white !important;
 }
-
 .text-primary {
   color: #4facfe !important;
 }
-
 .text-muted {
   color: rgba(255, 255, 255, 0.7) !important;
 }
-
 .fw-semibold {
   color: rgba(255, 255, 255, 0.9) !important;
 }

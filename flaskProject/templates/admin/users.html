@@ -497,14 +497,19 @@
 
     // Add loading state to delete buttons
     document.querySelectorAll('.btn-delete').forEach(button => {
-        button.addEventListener('click', function() {
-            if (this.closest('form').onsubmit()) {
-                this.innerHTML = '<i class="bi bi-hourglass-split"></i> Deleting...';
-                this.disabled = true;
-                this.closest('.user-card').classList.add('loading');
-            }
-        });
+    button.addEventListener('click', function(e) {
+        const form = this.closest('form');
+        const confirmed = confirmDelete(this.closest('.user-card').querySelector('.user-details h4').innerText);
+        if (!confirmed) {
+            e.preventDefault();
+            return;
+        }
+        this.innerHTML = '<i class="bi bi-hourglass-split"></i> Deleting...';
+        this.disabled = true;
+        this.closest('.user-card').classList.add('loading');
     });
+});
+
 
     // Auto-focus search input on page load
     document.addEventListener('DOMContentLoaded', function() {

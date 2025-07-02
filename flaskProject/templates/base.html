@@ -561,41 +561,55 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto align-items-lg-center gap-2">
-                <!-- Community Page Link -->
+            <!-- Model Metrics -->
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('main.model_metrics') }}">
+                    <i class="bi bi-bar-chart-line-fill me-1"></i>Model Metrics
+                </a>
+            </li>
+
+            <!-- Admin Users Panel (Only for Admins) -->
+            {% if current_user.is_authenticated and current_user.is_admin %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('main.admin_users') }}">
+                    <i class="bi bi-shield-lock-fill me-1"></i>Admin Panel
+                </a>
+            </li>
+            {% endif %}
+
+            <!-- Community -->
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('main.community') }}">
+                    <i class="bi bi-people-fill me-1"></i>Community
+                </a>
+            </li>
+
+            <!-- Authenticated User Info and Actions -->
+            {% if current_user.is_authenticated %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('main.model_metrics') }}">Model Metrics</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('main.community') }}">
-                        <i class="bi bi-people-fill me-1"></i>Community
+                    <a class="nav-link" href="{{ url_for('main.profile') }}">
+                        <i class="bi bi-person-circle me-1"></i>Hi, {{ current_user.username }}
                     </a>
                 </li>
-
-                {% if current_user.is_authenticated %}
-
-                    <li class="nav-item">
-
-                            <a class = "nav-link" href="{{ url_for('main.profile') }}">Hi, {{ current_user.username }} </a>
-
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('auth.logout') }}">
-                            <i class="bi bi-box-arrow-right me-1"></i>Logout
-                        </a>
-                    </li>
-                {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('auth.login') }}">
-                            <i class="bi bi-box-arrow-in-right me-1"></i>Login
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('auth.register') }}">
-                            <i class="bi bi-person-plus-fill me-1"></i>Register
-                        </a>
-                    </li>
-                {% endif %}
-            </ul>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('auth.logout') }}">
+                        <i class="bi bi-box-arrow-right me-1"></i>Logout
+                    </a>
+                </li>
+            {% else %}
+                <!-- Guest Links -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('auth.login') }}">
+                        <i class="bi bi-box-arrow-in-right me-1"></i>Login
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('auth.register') }}">
+                        <i class="bi bi-person-plus-fill me-1"></i>Register
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
         </div>
     </div>
     </nav>
